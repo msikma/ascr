@@ -5,6 +5,7 @@
 
 import cheerio from 'cheerio'
 import he from 'he'
+import { merge } from 'lodash'
 
 import { findScriptData } from '../util/script'
 import { requestURL } from '../util/request'
@@ -127,7 +128,7 @@ const scrapePixivSingleImage = ($, url, isLoggedIn) => ({
 const scrapePixivAnimation = ($, url) => {
   // Find all script tags, take their HTML values.
   const scripts = $('#wrapper script').map((n, tag) => $(tag).html()).get()
-  // Keep only the one that has animation data.
+    // Keep only the one that has animation data.
     .filter(n => n.indexOf('ugokuIllustFullscreenData') > -1)
 
   // We should have one <script> tag that conforms to our search. If not, something is wrong.
@@ -179,8 +180,18 @@ const parsePixivMedium = ($, url) => {
   const desc = $(isLoggedIn ? '.ui-expander-container p.caption' : '#caption_long', $info).text().trim()
   const views = Number($(isLoggedIn ? '.user-reaction .view-count' : '.cool-work-sub li.info:first-child .views', $info).text().trim())
   const likes = Number($(isLoggedIn ? '.user-reaction .rated-count' : '.cool-work-sub li.info:last-child .views', $info).text().trim())
-  const isR18 = isLoggedIn ? $('.meta .r-18', $info).length > 0 : $('.breadcrumb a[href*="R-18"]').length > 0
-  const isR18G = isLoggedIn ? $('.meta .r-18g', $info).length > 0 : $('.breadcrumb a[href*="R-18G"]').length > 0
+
+  // I'm not entirely sure why the R-18 breadcrumbs don't always show up.
+  // Or maybe it only doesn't show up on medium pages that lead to an RTL manga.
+  // Either way, this should cover every possibility.
+  const isR18Base = isLoggedIn ? $('.meta .r-18', $info).length > 0 : $('.breadcrumb a[href*="R-18"]').length > 0
+  const isR18GBase = isLoggedIn ? $('.meta .r-18g', $info).length > 0 : $('.breadcrumb a[href*="R-18G"]').length > 0
+  const isR18Image = $('.r18-image').length > 1
+  // R18G is only in the keywords...
+  const isR18GKeyword = $('meta[name="keywords"]').attr('content').split(',').indexOf('R-18G') > -1
+  const isR18 = isR18Base || isR18Image
+  const isR18G = isR18GBase || isR18GKeyword
+
   const isAnimation = $('._ugoku-illust-player-container', $work).length > 0
   const tags = $(isLoggedIn ? '.tags .tag a.text' : '#tag_area .tag a.text').map((n, tag) => $(tag).text().trim()).get()
   const authorName = $(isLoggedIn ? '.user-name' : 'a', $author).text().trim()
@@ -271,8 +282,52 @@ const parsePixivAuthor = ($) => {
 /**
  * Parses a Pixiv manga page to extract its image links.
  * Returns an array of images. Requires the original URL for extracting the ID.
+ *
+ * This code works for both LTR and RTL manga pages, which are completely different.
+ * For the LTR page we fish the images out of the HTML. For RTL, we extract them
+ * from a series of <script> tags.
  */
 const parsePixivManga = ($, url) => {
+  // Verify whether this is an RTL manga page or not.
+  const isRTL = $('html').hasClass('_book-viewer', 'rtl')
+  if (isRTL) {
+    // Retrieve information about the images from the Javascript data.
+    const scripts = $('script').map((n, tag) => $(tag).html()).get()
+      // Keep only the ones that have image data.
+      .filter(n => n.indexOf('pixiv.context.images[') > -1)
+
+    // We should have at least one <script> tag. One per image.
+    if (scripts.length === 0) {
+      throw new TypeError('Could not extract image info from Pixiv manga page')
+    }
+
+    try {
+      // Pick up all the images from the <script> tags.
+      const imageData = scripts.reduce((acc, scr) => {
+        // Set up a 'pixiv' object with the structure that the <script> tag expects.
+        const scriptData = findScriptData(`
+          pixiv = {
+            context: {
+              images: [],
+              thumbnailImages: [],
+              originalImages: []
+            }
+          };
+          ${scr}
+        `)
+        return merge(acc, scriptData.sandbox)
+      }, {})
+
+      // Now all we need to do is add the current URL as referrer.
+      const originalImages = imageData.pixiv.context.originalImages.map(img => ({ src: [img, url] }))
+      return originalImages
+    }
+    catch (e) {
+      throw new TypeError(`Could not extract image info from Pixiv manga page: ${e}`)
+    }
+  }
+
+  // On regular manga pages, it's a bit more straightforward.
   const id = url.match(illustID)[1]
   const $containers = $('.item-container img.image')
   // Very confusing. jQuery's map() has the counter first. Regular map() has it after.
@@ -286,7 +341,8 @@ const parsePixivManga = ($, url) => {
  * and returns its images.
  */
 const fetchPixivManga = async (mangaURL) => {
-  const $mangaHTML = cheerio.load(await requestURL(mangaURL))
+  const html = await requestURL(mangaURL)
+  const $mangaHTML = cheerio.load(html)
   return parsePixivManga($mangaHTML, mangaURL)
 }
 
