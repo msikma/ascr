@@ -1,7 +1,7 @@
 {
   "name": "ascr",
   "description": "Art Scraper - downloads artwork from websites for personal archiving.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "homepage": "https://github.com/msikma/ascr",
   "main": "dist/index.js",
   "scripts": {

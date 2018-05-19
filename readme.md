@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/ascr.svg)](https://badge.fury.io/js/ascr) [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+
 **A script that downloads artwork from websites for personal archiving**
 
 Currently, this script can scrape images from Twitter, Tumblr and Pixiv. It can't get videos from Twitter or Tumblr (you should use [youtube-dl](https://rg3.github.io/youtube-dl/) for that), but it does convert Pixiv animations into either .gif or .webm.
@@ -56,22 +58,22 @@ Optional arguments:
   --name NAME        Name to give the files (autodetected for some sources).
   --author AUTHOR    Override the name of the author.
   --cookies COOKIES  Location of the cookies.txt file.
-  --subset SUBSET    Get a subset of the item's images. Can be a single value 
+  --subset SUBSET    Get a subset of the item's images. Can be a single value
                      (e.g. 4), range (e.g. 1-6) or sequence (e.g. 2,4,7-9).
-  --dir-min DIRMIN   Minimum number of images needed to make a directory. (5) 
+  --dir-min DIRMIN   Minimum number of images needed to make a directory. (5)
                      Set to 0 to never make a directory.
   --author-dir       If making a directory, make one of the author's name too.
   --overwrite        Overwrite files if they exist instead of renaming.
-  --raw-data         Instead of displaying an information table, display raw 
+  --raw-data         Instead of displaying an information table, display raw
                      data extracted from the page.
   --only-data        Display information without downloading files.
-  --anim TYPE        Pixiv: sets the type of animation we will generate when 
+  --anim TYPE        Pixiv: sets the type of animation we will generate when
                      downloading an animated work: gif, webm, none. (gif)
-  --no-thread        Twitter: download only the original tweet's images 
+  --no-thread        Twitter: download only the original tweet's images
                      instead of the whole thread.
   --inline           Tumblr: include inline images found in the caption HTML.
 
-Please always respect the artists' copyright and their wishes regarding the 
+Please always respect the artists' copyright and their wishes regarding the
 sharing of their work.
 ```
 
