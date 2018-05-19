@@ -1,0 +1,47 @@
+{
+  "name": "ascr",
+  "description": "Art Scraper - downloads artwork from websites for personal archiving.",
+  "version": "1.0.0",
+  "homepage": "https://github.com/msikma/ascr",
+  "main": "dist/index.js",
+  "scripts": {
+    "lint": "eslint src; exit 0",
+    "build": "babel src --presets babel-preset-env --plugins transform-class-properties,transform-object-rest-spread --out-dir dist"
+  },
+  "bin": "bin/ascr",
+  "author": "Michiel Sikma <michiel@sikma.org>",
+  "license": "SEE LICENSE IN <readme.md>",
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "babel-plugin-transform-class-properties": "^6.1.0",
+    "babel-plugin-transform-object-rest-spread": "^6.1.0",
+    "babel-polyfill": "^6.1.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-register": "^6.1.0",
+    "eslint": "^4.4.1",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^5.1.0",
+    "eslint-plugin-react": "^7.2.0"
+  },
+  "dependencies": {
+    "argparse": "1.0.10",
+    "chalk": "^2.3.1",
+    "cheerio": "^1.0.0-rc.2",
+    "cli-table2": "git://github.com/msikma/cli-table2#2b8f27a",
+    "draftlog": "^1.0.12",
+    "file-cookie-store": "msikma/file-cookie-store",
+    "filesize": "^3.6.0",
+    "he": "^1.1.1",
+    "lodash": "^4.17.10",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.21.0",
+    "move-file": "^1.0.0",
+    "requestAsBrowser": "git://github.com/msikma/requestAsBrowser#8fef155",
+    "sanitize-filename": "^1.6.1",
+    "strip-ansi": "^4.0.0",
+    "tmp": "^0.0.33",
+    "unzip": "^0.1.11",
+    "wrap-ansi": "^3.0.1"
+  }
+}

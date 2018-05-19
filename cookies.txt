@@ -1,0 +1,5 @@
+# Netscape HTTP Cookie File
+# http://www.netscape.com/newsref/std/cookie_spec.html
+# Use a cookie file to make logged in requests.
+# The youtube-dl readme has a quick explanation: https://github.com/rg3/youtube-dl#how-do-i-pass-cookies-to-youtube-dl
+# Put your cookie file in '~/.config/ascr/cookies.txt'.

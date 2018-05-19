@@ -1,0 +1,80 @@
+#!/usr/bin/env node
+const fs = require('fs')
+const path = require('path')
+const ArgumentParser = require('argparse').ArgumentParser
+const HelpFormatter = require('argparse/lib/help/formatter')
+const package = require('../package.json')
+
+const copyrightNotice = 'Please always respect the artists\' copyright and their wishes regarding the sharing of their work.'
+const longHelp = `This program will visit the URL given and download the image found there.
+Currently supported URL schemes:
+  Pixiv:   e.g. https://www.pixiv.net/member_illust.php?mode=medium&illust_id=12345678
+  Twitter: e.g. https://twitter.com/username/status/12345678910111213
+  Tumblr:  e.g. https://username.tumblr.com/post/12345678910/post-title
+
+To download images that are behind a login wall (e.g. posts by protected
+accounts or R-18 images), you need to set up a cookies.txt file containing
+the session cookies from your browser.
+
+See ${package.homepage} for information on how to do this.
+`
+
+const parser = new ArgumentParser({
+  version: package.version,
+  addHelp: true,
+  description: package.description,
+  epilog: copyrightNotice
+})
+parser.formatHelp = () => {
+  // Here we do some messing around with the private ArgumentParser API in order to
+  // get extra text to show up. You're never supposed to do that, but oh well.
+  // This is why I've locked the package to version 1.0.10.
+  const formatter = new HelpFormatter({ prog: parser.prog })
+  formatter.addUsage(parser.usage, parser._actions, parser._mutuallyExclusiveGroups)
+  formatter.addText(parser.description)
+  // Add the long help text without filtering the text formatting.
+  formatter._addItem(str => str, [longHelp])
+  parser._actionGroups.forEach((actionGroup) => {
+    formatter.startSection(actionGroup.title)
+    formatter.addText(actionGroup.description)
+    formatter.addArguments(actionGroup._groupActions)
+    formatter.endSection()
+  });
+  formatter.addText(parser.epilog)
+  return formatter.formatHelp()
+}
+parser.addArgument(['-q', '--quiet'], { help: 'Only output filenames. Pass -qq to fully silence output.', action: 'count', defaultValue: 0 })
+parser.addArgument('url', { help: 'URL(s) to scrape and download files from.', nargs: '*', defaultValue: '' })
+parser.addArgument('--name', { help: 'Name to give the files (autodetected for some sources).' })
+parser.addArgument('--author', { help: 'Override the name of the author.' })
+parser.addArgument('--cookies', { help: 'Location of the cookies.txt file.' })
+parser.addArgument('--subset', { help: 'Get a subset of the item\'s images. Can be a single value (e.g. 4), range (e.g. 1-6) or sequence (e.g. 2,4,7-9).', defaultValue: '' })
+parser.addArgument('--dir-min', { help: 'Minimum number of images needed to make a directory. (5) Set to 0 to never make a directory.', dest: 'dirMin', defaultValue: 5, type: Number })
+parser.addArgument('--author-dir', { help: 'If making a directory, make one of the author\'s name too.', action: 'storeTrue', dest: 'authorDir' })
+parser.addArgument('--overwrite', { help: 'Overwrite files if they exist instead of renaming.', action: 'storeTrue' })
+parser.addArgument('--raw-data', { help: 'Instead of displaying an information table, display raw data extracted from the page.', action: 'storeTrue', dest: 'rawData' })
+parser.addArgument('--only-data', { help: 'Display information without downloading files.', action: 'storeTrue', dest: 'onlyData' })
+parser.addArgument('--anim', { help: 'Pixiv: sets the type of animation we will generate when downloading an animated work: gif, webm, none. (gif)', dest: 'type', defaultValue: 'gif' })
+parser.addArgument('--no-thread', { help: 'Twitter: download only the original tweet\'s images instead of the whole thread.', action: 'storeTrue', dest: 'noThread' })
+parser.addArgument('--inline', { help: 'Tumblr: include inline images found in the caption HTML.', action: 'storeTrue' })
+
+// Reminder: 'quiet' is 0, 1 or 2. 'name', 'author', 'cookies', 'subset', are null or strings. 'dirMin' is a number.
+// 'urls' is an array of strings. 'rawData', 'onlyData', 'inline', 'authorDir', 'noThread' are booleans. 'type' is 'gif', 'webm' or 'none'.
+const parsed = parser.parseArgs()
+// Note: we're limiting 'quiet' to max 2, and renaming 'url' to 'urls' because of a bug in argparse.
+const args = { ...parsed, quiet: Math.min(2, parsed.quiet), urls: parsed.url }
+if (args.urls.length === 0) {
+  parser.error('include at least one URL')
+}
+if (['gif', 'webm', 'none'].indexOf(args.type) === -1) {
+  parser.error(`argument "--anim": Invalid choice: ${args.type} (choose from [gif, webm, none])`)
+}
+
+// Default the cookie file to the root directory's 'cookies.txt'.
+// If the cookies argument was passed on the command line, make that leading.
+// We follow the XDG specification. The cookie file is in ~/.config/ascr/cookies.txt by default.
+args.cookies = args.cookies || process.env.ASCR_COOKIE_FILE || path.join(process.env.HOME, '.config', 'ascr', 'cookies.txt')
+
+// Fire up the main application.
+require('babel-polyfill')
+require('../dist/index').run(args)
