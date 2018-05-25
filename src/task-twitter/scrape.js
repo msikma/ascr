@@ -16,8 +16,11 @@ const ERROR_404 = 34
 const safetyHeaders = {
   'Accept-Encoding': 'gzip, deflate, br',
   'Referer': 'https://twitter.com/?lang=en',
-  'X-Requested-With': 'XMLHttpRequest',
-  'X-Twitter-Active-User': 'yes'
+  'authority': 'twitter.com',
+  'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'accept-language': 'en-US,en;q=0.9,ja;q=0.8,nl;q=0.7,de;q=0.6,es;q=0.5,it;q=0.4,pt;q=0.3',
+  'upgrade-insecure-requests': '1',
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
 }
 
 // Returns the text of a tweet, modified to look good in a terminal.
@@ -109,7 +112,7 @@ const parseTwitterPosts = ($, authorName, tweetID, noThread, is404 = false, isUn
 export const fetchTwitterSingle = async (url, noThread) => {
   // Extract username and tweet ID from the URL.
   const urlInfo = url.match(tweetCheck)
-  const html = await requestURL(url, safetyHeaders)
+  const html = await requestURL(url, safetyHeaders, true)
 
   // If the page is a 404, we don't get HTML (due to our headers specifying that this is an XHR).
   // Instead, we get JSON. If this is the case, we'll pass it on to the parser - it will then return

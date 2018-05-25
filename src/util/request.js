@@ -11,7 +11,7 @@ import cookieJar from './cookies'
  *
  * This mimics a browser request to ensure we don't hit an anti-bot wall.
  */
-export const requestURL = async (url, extraHeaders = {}, gzip = true) => {
-  const req = await requestAsBrowser(url, cookieJar.jar, extraHeaders, gzip)
+export const requestURL = async (url, extraHeaders = {}, gzip = true, reqOverrides = null, useCookies = true) => {
+  const req = await requestAsBrowser(url, useCookies ? cookieJar.jar : null, extraHeaders, gzip, reqOverrides)
   return req.body
 }

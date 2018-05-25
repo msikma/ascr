@@ -27,11 +27,11 @@ export const printPixivInfo = (info, printRawData) => {
   }
 
   if (info.isError) {
-    console.log('ascr: error: Pixiv returned an error page; possibly the illustration does not exist or is private')
+    console.log('ascr: error: Pixiv returned an error page; possibly the illustration does not exist or is private.')
     process.exit(1)
   }
   if (!info.isLoggedIn && !info.isSFW) {
-    console.log('ascr: error: cannot download non-SFW images from Pixiv without being logged in')
+    console.log('ascr: error: cannot download non-SFW images from Pixiv without being logged in.')
     process.exit(1)
   }
 
