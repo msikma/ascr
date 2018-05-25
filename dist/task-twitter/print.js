@@ -20,16 +20,20 @@ var printTwitterInfo = exports.printTwitterInfo = function printTwitterInfo(twee
   }
 
   // Display various error messages and exit if necessary.
+  if (!tweetsInfo[0]) {
+    console.log('ascr: error: could not retrieve image from the given URL. If using cookies, try re-exporting them from Twitter or try without cookies altogether.');
+    process.exit(1);
+  }
   if (tweetsInfo[0].is404) {
-    console.log('ascr: error: given URL returned a page not found error (404)');
+    console.log('ascr: error: given URL returned a page not found error (404).');
     process.exit(1);
   }
   if (tweetsInfo[0].isUnknownError) {
-    console.log('ascr: error: Twitter returned an unknown error code while trying to scrape the page (possibly temporary)');
+    console.log('ascr: error: Twitter returned an unknown error code while trying to scrape the page (possibly temporary).');
     process.exit(1);
   }
   if (tweetsInfo[0].isUnauthorized) {
-    console.log('ascr: error: not authorized to view this tweet (login cookies are required from an account that follows the user)');
+    console.log('ascr: error: not authorized to view this tweet (login cookies are required from an account that follows the user).');
     process.exit(1);
   }
 

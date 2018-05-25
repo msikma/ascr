@@ -29,13 +29,15 @@ var requestURL = exports.requestURL = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url) {
     var extraHeaders = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var gzip = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    var reqOverrides = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+    var useCookies = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
     var req;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return (0, _requestAsBrowser2.default)(url, _cookies2.default.jar, extraHeaders, gzip);
+            return (0, _requestAsBrowser2.default)(url, useCookies ? _cookies2.default.jar : null, extraHeaders, gzip, reqOverrides);
 
           case 2:
             req = _context.sent;
@@ -49,7 +51,7 @@ var requestURL = exports.requestURL = function () {
     }, _callee, undefined);
   }));
 
-  return function requestURL(_x3) {
+  return function requestURL(_x5) {
     return _ref.apply(this, arguments);
   };
 }();

@@ -15,6 +15,8 @@ var _he = require('he');
 
 var _he2 = _interopRequireDefault(_he);
 
+var _lodash = require('lodash');
+
 var _script = require('../util/script');
 
 var _request = require('../util/request');
@@ -210,8 +212,18 @@ var parsePixivMedium = function parsePixivMedium($, url) {
   var desc = $(isLoggedIn ? '.ui-expander-container p.caption' : '#caption_long', $info).text().trim();
   var views = Number($(isLoggedIn ? '.user-reaction .view-count' : '.cool-work-sub li.info:first-child .views', $info).text().trim());
   var likes = Number($(isLoggedIn ? '.user-reaction .rated-count' : '.cool-work-sub li.info:last-child .views', $info).text().trim());
-  var isR18 = isLoggedIn ? $('.meta .r-18', $info).length > 0 : $('.breadcrumb a[href*="R-18"]').length > 0;
-  var isR18G = isLoggedIn ? $('.meta .r-18g', $info).length > 0 : $('.breadcrumb a[href*="R-18G"]').length > 0;
+
+  // I'm not entirely sure why the R-18 breadcrumbs don't always show up.
+  // Or maybe it only doesn't show up on medium pages that lead to an RTL manga.
+  // Either way, this should cover every possibility.
+  var isR18Base = isLoggedIn ? $('.meta .r-18', $info).length > 0 : $('.breadcrumb a[href*="R-18"]').length > 0;
+  var isR18GBase = isLoggedIn ? $('.meta .r-18g', $info).length > 0 : $('.breadcrumb a[href*="R-18G"]').length > 0;
+  var isR18Image = $('.r18-image').length > 1;
+  // R18G is only in the keywords...
+  var isR18GKeyword = $('meta[name="keywords"]').attr('content').split(',').indexOf('R-18G') > -1;
+  var isR18 = isR18Base || isR18Image;
+  var isR18G = isR18GBase || isR18GKeyword;
+
   var isAnimation = $('._ugoku-illust-player-container', $work).length > 0;
   var tags = $(isLoggedIn ? '.tags .tag a.text' : '#tag_area .tag a.text').map(function (n, tag) {
     return $(tag).text().trim();
@@ -303,8 +315,48 @@ var parsePixivAuthor = function parsePixivAuthor($) {
 /**
  * Parses a Pixiv manga page to extract its image links.
  * Returns an array of images. Requires the original URL for extracting the ID.
+ *
+ * This code works for both LTR and RTL manga pages, which are completely different.
+ * For the LTR page we fish the images out of the HTML. For RTL, we extract them
+ * from a series of <script> tags.
  */
 var parsePixivManga = function parsePixivManga($, url) {
+  // Verify whether this is an RTL manga page or not.
+  var isRTL = $('html').hasClass('_book-viewer', 'rtl');
+  if (isRTL) {
+    // Retrieve information about the images from the Javascript data.
+    var scripts = $('script').map(function (n, tag) {
+      return $(tag).html();
+    }).get()
+    // Keep only the ones that have image data.
+    .filter(function (n) {
+      return n.indexOf('pixiv.context.images[') > -1;
+    });
+
+    // We should have at least one <script> tag. One per image.
+    if (scripts.length === 0) {
+      throw new TypeError('Could not extract image info from Pixiv manga page');
+    }
+
+    try {
+      // Pick up all the images from the <script> tags.
+      var imageData = scripts.reduce(function (acc, scr) {
+        // Set up a 'pixiv' object with the structure that the <script> tag expects.
+        var scriptData = (0, _script.findScriptData)('\n          pixiv = {\n            context: {\n              images: [],\n              thumbnailImages: [],\n              originalImages: []\n            }\n          };\n          ' + scr + '\n        ');
+        return (0, _lodash.merge)(acc, scriptData.sandbox);
+      }, {});
+
+      // Now all we need to do is add the current URL as referrer.
+      var _originalImages = imageData.pixiv.context.originalImages.map(function (img) {
+        return { src: [img, url] };
+      });
+      return _originalImages;
+    } catch (e) {
+      throw new TypeError('Could not extract image info from Pixiv manga page: ' + e);
+    }
+  }
+
+  // On regular manga pages, it's a bit more straightforward.
   var id = url.match(illustID)[1];
   var $containers = $('.item-container img.image');
   // Very confusing. jQuery's map() has the counter first. Regular map() has it after.
@@ -323,21 +375,20 @@ var parsePixivManga = function parsePixivManga($, url) {
  */
 var fetchPixivManga = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(mangaURL) {
-    var $mangaHTML;
+    var html, $mangaHTML;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.t0 = _cheerio2.default;
-            _context.next = 3;
+            _context.next = 2;
             return (0, _request.requestURL)(mangaURL);
 
-          case 3:
-            _context.t1 = _context.sent;
-            $mangaHTML = _context.t0.load.call(_context.t0, _context.t1);
+          case 2:
+            html = _context.sent;
+            $mangaHTML = _cheerio2.default.load(html);
             return _context.abrupt('return', parsePixivManga($mangaHTML, mangaURL));
 
-          case 6:
+          case 5:
           case 'end':
             return _context.stop();
         }

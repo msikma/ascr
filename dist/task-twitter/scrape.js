@@ -29,8 +29,11 @@ var ERROR_404 = 34;
 var safetyHeaders = {
   'Accept-Encoding': 'gzip, deflate, br',
   'Referer': 'https://twitter.com/?lang=en',
-  'X-Requested-With': 'XMLHttpRequest',
-  'X-Twitter-Active-User': 'yes'
+  'authority': 'twitter.com',
+  'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'accept-language': 'en-US,en;q=0.9,ja;q=0.8,nl;q=0.7,de;q=0.6,es;q=0.5,it;q=0.4,pt;q=0.3',
+  'upgrade-insecure-requests': '1',
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
 
   // Returns the text of a tweet, modified to look good in a terminal.
 };var getTweetText = function getTweetText($, $tweet) {
@@ -141,7 +144,7 @@ var fetchTwitterSingle = exports.fetchTwitterSingle = function () {
             // Extract username and tweet ID from the URL.
             urlInfo = url.match(_index.tweetCheck);
             _context.next = 3;
-            return (0, _request.requestURL)(url, safetyHeaders);
+            return (0, _request.requestURL)(url, safetyHeaders, true);
 
           case 3:
             html = _context.sent;
