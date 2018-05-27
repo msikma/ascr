@@ -41,7 +41,7 @@ var isTumblrURL = exports.isTumblrURL = function isTumblrURL(url) {
  * Parses any Tumblr link and returns information about the post.
  */
 var fetchTumblrURL = exports.fetchTumblrURL = function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url) {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url, tumblrJSON) {
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -51,7 +51,7 @@ var fetchTumblrURL = exports.fetchTumblrURL = function () {
               break;
             }
 
-            return _context.abrupt('return', (0, _scrape.fetchTumblrSingle)(url));
+            return _context.abrupt('return', (0, _scrape.fetchTumblrSingle)(url, tumblrJSON));
 
           case 2:
           case 'end':
@@ -61,7 +61,7 @@ var fetchTumblrURL = exports.fetchTumblrURL = function () {
     }, _callee, undefined);
   }));
 
-  return function fetchTumblrURL(_x) {
+  return function fetchTumblrURL(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -71,14 +71,14 @@ var fetchTumblrURL = exports.fetchTumblrURL = function () {
  * then downloads the files.
  */
 var downloadTumblrURL = exports.downloadTumblrURL = function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite, tumblrJSON) {
     var info;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return fetchTumblrURL(url);
+            return fetchTumblrURL(url, tumblrJSON);
 
           case 2:
             info = _context2.sent;
@@ -108,7 +108,7 @@ var downloadTumblrURL = exports.downloadTumblrURL = function () {
     }, _callee2, undefined);
   }));
 
-  return function downloadTumblrURL(_x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10, _x11, _x12) {
+  return function downloadTumblrURL(_x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10, _x11, _x12, _x13, _x14) {
     return _ref2.apply(this, arguments);
   };
 }();

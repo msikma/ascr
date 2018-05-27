@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.moveFile = exports.unlinkFile = exports.unzipFile = exports.writeFile = exports.makeDirectory = exports.safePath = exports.copyFile = undefined;
+exports.moveFile = exports.unlinkFile = exports.unzipFile = exports.readFile = exports.writeFile = exports.makeDirectory = exports.safePath = exports.copyFile = undefined;
 
 var _moveFile = require('move-file');
 
@@ -84,6 +84,18 @@ var writeFile = exports.writeFile = function writeFile(path, content) {
   return new Promise(function (resolve, reject) {
     _fs2.default.writeFile(path, content, 'utf8', function (err) {
       if (err) reject(err);else resolve();
+    });
+  });
+};
+
+/**
+ * Reads a file from a path. Uses a promise.
+ */
+var readFile = exports.readFile = function readFile(path) {
+  var encoding = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'utf8';
+  return new Promise(function (resolve, reject) {
+    _fs2.default.readFile(path, encoding, function (err, data) {
+      if (err) reject(err);else resolve(data);
     });
   });
 };

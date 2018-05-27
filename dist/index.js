@@ -35,13 +35,13 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
  */
 var run = exports.run = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(args) {
-    var urls, name, author, cookies, dirMin, rawData, onlyData, type, inline, quiet, authorDir, noThread, overwrite, subset, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, url;
+    var urls, name, author, cookies, tumblrJSON, dirMin, rawData, onlyData, type, inline, quiet, authorDir, noThread, overwrite, subset, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, url;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            urls = args.urls, name = args.name, author = args.author, cookies = args.cookies, dirMin = args.dirMin, rawData = args.rawData, onlyData = args.onlyData, type = args.type, inline = args.inline, quiet = args.quiet, authorDir = args.authorDir, noThread = args.noThread, overwrite = args.overwrite;
+            urls = args.urls, name = args.name, author = args.author, cookies = args.cookies, tumblrJSON = args.tumblrJSON, dirMin = args.dirMin, rawData = args.rawData, onlyData = args.onlyData, type = args.type, inline = args.inline, quiet = args.quiet, authorDir = args.authorDir, noThread = args.noThread, overwrite = args.overwrite;
             subset = (0, _subset.subsetRange)(args.subset);
 
             // Prepare our cookies for usage in URL download requests.
@@ -103,7 +103,7 @@ var run = exports.run = function () {
             }
 
             _context.next = 26;
-            return (0, _taskTumblr.downloadTumblrURL)(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite);
+            return (0, _taskTumblr.downloadTumblrURL)(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite, tumblrJSON);
 
           case 26:
             _context.next = 30;
