@@ -91,7 +91,25 @@ The easiest way to install ffmpeg on Mac OS X is by using [Brew](https://brew.sh
 
 If you're making your own build, make sure to get `libvpx-dev` and compile with `--enable-libvpx`.
 
-## Using a `cookies.txt` file
+## Authorization
+
+### Using Tumblr in Europe (getting an API key)
+
+As of late May 2018, Tumblr changed its website to be GDPR compliant. In doing so, it somehow broke its ability to show embedded posts to people from Europe under any circumstances: even if you have accepted its GDPR policy, and even if you're logged in.
+
+Post embeds are normally how Ascr gets its data from Tumblr posts, meaning in Europe we can no longer retrieve post information without an API key.
+
+To get an API key, log in to your account and go to [https://www.tumblr.com/oauth/apps](https://www.tumblr.com/oauth/apps). Register a new application. For the "application website" and "default callback URL" you can enter any URL (e.g. `http://site.com/` will do), because we won't be using them.
+
+After submitting the form, you should see your application's name in the list of applications. Grab the *consumer key* and *consumer secret*. Don't share these with anyone, and put them in a file called `~/.config/ascr/tumblr.json`, in the following format:
+
+```json
+{"consumer_key":"your_consumer_key_goes_here", "consumer_secret":"your_secret_key_goes_here"}
+```
+
+Ascr will use these keys and switch to the API for retrieving Tumblr images automatically.
+
+### Using a `cookies.txt` file
 
 You'll likely want to set up a cookies file in order to make logged in requests. Pixiv images are in lower resolution to users who aren't logged in, and some images will not be visible to guests (for example, images from a private Twitter account).
 

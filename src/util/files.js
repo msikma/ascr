@@ -55,6 +55,18 @@ export const writeFile = (path, content) => (
 )
 
 /**
+ * Reads a file from a path. Uses a promise.
+ */
+export const readFile = (path, encoding = 'utf8') => (
+  new Promise((resolve, reject) => {
+    fs.readFile(path, encoding, (err, data) => {
+      if (err) reject(err)
+      else resolve(data)
+    })
+  })
+)
+
+/**
  * Unzips a file to a destination directory. Uses a promise.
  */
 export const unzipFile = (src, dest) => (

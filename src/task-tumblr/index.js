@@ -31,9 +31,9 @@ export const isTumblrURL = (url) => {
 /**
  * Parses any Tumblr link and returns information about the post.
  */
-export const fetchTumblrURL = async (url) => {
+export const fetchTumblrURL = async (url, tumblrJSON) => {
   if (isTumblrSingleURL(url)) {
-    return fetchTumblrSingle(url)
+    return fetchTumblrSingle(url, tumblrJSON)
   }
 }
 
@@ -41,8 +41,8 @@ export const fetchTumblrURL = async (url) => {
  * Main entry point. Scrapes the Tumblr link, then prints its information,
  * then downloads the files.
  */
-export const downloadTumblrURL = async (url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite) => {
-  const info = await fetchTumblrURL(url)
+export const downloadTumblrURL = async (url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite, tumblrJSON) => {
+  const info = await fetchTumblrURL(url, tumblrJSON)
 
   // Print info if not in quiet mode.
   if (!quiet) printTumblrInfo(info, rawData)

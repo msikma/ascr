@@ -48,6 +48,7 @@ parser.addArgument('url', { help: 'URL(s) to scrape and download files from.', n
 parser.addArgument('--name', { help: 'Name to give the files (autodetected for some sources).' })
 parser.addArgument('--author', { help: 'Override the name of the author.' })
 parser.addArgument('--cookies', { help: 'Location of the cookies.txt file.' })
+parser.addArgument('--t-api', { help: 'Location of the tumblr.json file.' })
 parser.addArgument('--subset', { help: 'Get a subset of the item\'s images. Can be a single value (e.g. 4), range (e.g. 1-6) or sequence (e.g. 2,4,7-9).', defaultValue: '' })
 parser.addArgument('--dir-min', { help: 'Minimum number of images needed to make a directory. (5) Set to 0 to never make a directory.', dest: 'dirMin', defaultValue: 5, type: Number })
 parser.addArgument('--author-dir', { help: 'If making a directory, make one of the author\'s name too.', action: 'storeTrue', dest: 'authorDir' })
@@ -74,7 +75,23 @@ if (['gif', 'webm', 'none'].indexOf(args.type) === -1) {
 // If the cookies argument was passed on the command line, make that leading.
 // We follow the XDG specification. The cookie file is in ~/.config/ascr/cookies.txt by default.
 args.cookies = args.cookies || process.env.ASCR_COOKIE_FILE || path.join(process.env.HOME, '.config', 'ascr', 'cookies.txt')
+// Do the same for tumblr.json, which contains Tumblr API keys.
+args.tumblrJSON = args.t_api || process.env.ASCR_TUMBLR_JSON || path.join(process.env.HOME, '.config', 'ascr', 'tumblr.json')
 
 // Fire up the main application.
 require('babel-polyfill')
-require('../dist/index').run(args)
+
+// Note: to quickly run tests using the /src directory, make an empty file called 'testing'
+// in the repository root directory. If found, it will run from /src instead.
+if (fs.existsSync(`${__dirname}/../testing`)) {
+  // Load up Babel and transpile code on the fly. Slightly slower.
+  require('babel-register')({
+    "presets": ["env"],
+    "plugins": ["transform-class-properties", "transform-object-rest-spread"]
+  })
+  require('../src/index').run(args)
+}
+else {
+  // Non-testing.
+  require('../dist/index').run(args)
+}
