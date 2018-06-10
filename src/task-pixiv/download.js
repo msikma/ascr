@@ -19,7 +19,7 @@ const pixivHeaders = (referrer) => ({
   'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
   'Cache-Control': 'no-cache',
   'Authority': 'i.pximg.net',
-  'Referer': referrer
+  ...(referrer ? { 'Referer': referrer } : {})
 })
 
 /**

@@ -11,6 +11,21 @@ const nameSeparator = ' - '
 const azSeparator = '-'
 
 /**
+ * When downloading multiple images from Pixiv, the largest size image might be
+ * a JPG or it might be a PNG. The cheapest strategy is to try and download
+ * the JPG first, and if it's a 404, download the PNG.
+ */
+export const swapExt = (url) => {
+  const eb = getExtAndBase(url)
+  if (eb.ext === 'jpg' || eb.ext === 'jpeg') {
+    return `${eb.fn}.png`
+  }
+  else {
+    return `${eb.fn}.jpg`
+  }
+}
+
+/**
  * Returns a filename and directory name suggestion for files we download.
  * 'a' is the serial number for this image, and 'z' is the total number of images.
  * 'ext' is the file extension (e.g. 'jpg' or 'png'), without a period.

@@ -8,7 +8,8 @@ import chalk from 'chalk'
 import { downloadFileAsBrowser } from 'requestAsBrowser'
 
 import cookieJar from './cookies'
-import { imageName, getExtAndBase, avoidDuplicates } from './name'
+import { requestURL } from './request'
+import { imageName, getExtAndBase, avoidDuplicates, swapExt } from './name'
 
 // Prints a warning if a file already exists.
 export const warnIfExists = (path, overwrite = false) => {
@@ -47,7 +48,10 @@ export const downloadAllFiles = (info, files, total, subset, name, author, makeD
     return new Promise(async (resolve) => {
       // If we're not overwriting existing files, run avoidDuplicates() to ensure the filename is unique.
       const fullPath = overwrite ? path.full : avoidDuplicates(path.full)
-      await downloadFileAsBrowser(url, fullPath, cookieJar.jar, headers)
+      // Our really big Pixiv hack.
+      const mightBeURL = image.srcMightBe ? image.srcMightBe[0] : null
+      const mightBeName = mightBeURL ? (overwrite ? swapExt(path.full) : avoidDuplicates(swapExt(path.full))) : null
+      await downloadFileAsBrowser(url, fullPath, cookieJar.jar, headers, true, {}, mightBeURL, mightBeName)
       updateProgress(++counter, total)
       resolve(fullPath)
     })

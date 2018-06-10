@@ -6,4 +6,4 @@
 /**
  * Checks whether something is an array or not.
  */
-export const isArray = v => v.constructor === Array
+export const isArray = v => v.constructor === Array || v.constructor.toString().indexOf(' Array()') > -1

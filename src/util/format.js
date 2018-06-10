@@ -45,6 +45,13 @@ const replaceNode = ($, $selector, formatter) => (
 )
 
 /**
+ * Replaces linebreaks with newlines.
+ */
+const replaceBreaks = ($) => (
+  $('br').replaceWith('\n')
+)
+
+/**
  * Replaces HTML blockquotes with indented text.
  */
 const replaceBlockquotes = ($, indent = 3, element = 'blockquote') => {
@@ -109,7 +116,7 @@ export const indentWrap = (input, width, linebreak = '\n') => (
 /**
  * Converts an HTML string to something we can display in a terminal.
  */
-export const htmlToTerm = (html) => {
+export const htmlToTerm = (html, convertLinebreaks = false) => {
   const $ = cheerio.load(html)
   replaceNode($, $('b, strong'), text => chalk.bold(text))
   replaceNode($, $('i, em'), text => chalk.italic(text))
@@ -117,5 +124,8 @@ export const htmlToTerm = (html) => {
   replaceNode($, $('strike'), text => addStrike(text))
   replaceNode($, $('p'), text => `\n${text}\n`)
   replaceBlockquotes($)
+  if (convertLinebreaks) {
+    replaceBreaks($)
+  }
   return filterLinebreaks($.text())
 }
