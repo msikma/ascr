@@ -37,7 +37,7 @@
     "mkdirp": "^0.5.1",
     "moment": "^2.21.0",
     "move-file": "^1.0.0",
-    "requestAsBrowser": "git://github.com/msikma/requestAsBrowser#8fef155",
+    "requestAsBrowser": "git://github.com/msikma/requestAsBrowser#93dc9d7",
     "sanitize-filename": "^1.6.1",
     "strip-ansi": "^4.0.0",
     "tmp": "^0.0.33",
