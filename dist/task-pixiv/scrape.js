@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fetchPixivSingle = undefined;
+exports.fetchPixivSingle = exports.pixivURLMode = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -16,6 +16,10 @@ var _he = require('he');
 var _he2 = _interopRequireDefault(_he);
 
 var _lodash = require('lodash');
+
+var _medium = require('./medium');
+
+var _name = require('../util/name');
 
 var _script = require('../util/script');
 
@@ -30,29 +34,13 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * Copyright © 2018, Michiel Sikma
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
 
-// Used to switch a URL between different view modes (e.g. 'manga', 'medium').
-var illustMode = new RegExp('(member_illust\\.php\\?mode=)(.+?)(&)');
-// Extracts the ID from the URL.
-var illustID = new RegExp('illust_id=([0-9]+)');
-
-// Used to convert smaller/thumbnail image links into their original version.
-// Use with imgReplace.
-var imgType = new RegExp('(pximg\\.net)(.+)?(img-)([^/]+)(.+)(_master[0-9]+)');
-var imgReplace = '$1$2$3original$5';
-
-// Used to extract various information from a member's top page.
-var memberID = new RegExp('member\\.php\\?.*id=([0-9]+)');
-var memberAge = new RegExp('([0-9]+)');
-var memberBday = new RegExp('([0-9]+)月([0-9]+)日');
-var bioBr = new RegExp('<br\\s*/?>', 'ig');
-
 /**
- * Turns a Pixiv URL into one we can more easily scrape.
+ * Switch a URL between different view modes (e.g. 'manga', 'medium').
  */
-var pixivURLMode = function pixivURLMode(url) {
+var pixivURLMode = exports.pixivURLMode = function pixivURLMode(url) {
   var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'medium';
 
-  return url.replace(illustMode, '$1' + type + '$3');
+  return url.replace(/(member_illust\.php\?mode=)(.+?)(&)/, '$1' + type + '$3');
 };
 
 /**
@@ -75,7 +63,7 @@ var pixivAuthorFromID = function pixivAuthorFromID(id) {
  * Turns a Pixiv image link into its original, high resolution version.
  */
 var pixivImgToOriginal = function pixivImgToOriginal(url) {
-  return url.replace(imgType, imgReplace);
+  return url.replace(/(pximg\.net)(.+)?(img-)([^/]+)(.+)(_master[0-9]+)/, '$1$2$3original$5');
 };
 
 /**
@@ -94,7 +82,7 @@ var filterAge = function filterAge(ageText) {
   if (!ageText) {
     return null;
   }
-  var matches = ageText.match(memberAge);
+  var matches = ageText.match(/([0-9]+)/);
   if (matches[1]) {
     return Number(matches[1]);
   }
@@ -118,7 +106,7 @@ var filterBday = function filterBday(bdayText) {
   if (!bdayText) {
     return null;
   }
-  var matches = bdayText.match(memberBday);
+  var matches = bdayText.match(/([0-9]+)月([0-9]+)日/);
   if (matches[1] && matches[2]) {
     return padZero(matches[1]) + '-' + padZero(matches[2]);
   }
@@ -140,142 +128,6 @@ var filterGender = function filterGender(genderText) {
 };
 
 /**
- * Returns the URL for the image on a single image page.
- */
-var scrapePixivSingleImage = function scrapePixivSingleImage($, url, isLoggedIn) {
-  return {
-    src: isLoggedIn ? [$('._illust_modal .wrapper img.original-image').attr('data-src'), url] : [$('.img-container img').attr('src'), url]
-  };
-};
-
-/**
- * Returns data for a Pixiv animation. This involves parsing a <script> tag and running it in a sandbox
- * to extract the variables declared there.
- */
-var scrapePixivAnimation = function scrapePixivAnimation($, url) {
-  // Find all script tags, take their HTML values.
-  var scripts = $('#wrapper script').map(function (n, tag) {
-    return $(tag).html();
-  }).get()
-  // Keep only the one that has animation data.
-  .filter(function (n) {
-    return n.indexOf('ugokuIllustFullscreenData') > -1;
-  });
-
-  // We should have one <script> tag that conforms to our search. If not, something is wrong.
-  // Probably means the scraping code is outdated.
-  if (scripts.length === 0) {
-    throw new TypeError('Could not extract animation info from Pixiv animation page');
-  }
-
-  try {
-    // Add a 'pixiv' object to the script code, since it assumes it has already been defined.
-    var data = (0, _script.findScriptData)('pixiv={context:{}};' + scripts[0]).sandbox.pixiv.context.ugokuIllustFullscreenData;
-
-    // If all went well, we should have the animation data.
-    // The animation's source images are contained in a zip file, which are then to be either
-    // saved verbatim (if --no-gif was passed), or merged into an animated gif using the frame delay data.
-    // To download the zip file, we need the work's URL to be the referrer.
-    return {
-      src: [data.src, url],
-      frames: data.frames,
-      frameCount: data.frames.length,
-      duration: data.frames.reduce(function (acc, frame) {
-        return acc + frame.delay;
-      }, 0)
-    };
-  } catch (e) {
-    throw new TypeError('Could not extract animation info from Pixiv animation page: ' + e);
-  }
-};
-
-/**
- * Takes apart a Pixiv ?mode=medium page and extracts information.
- * Call with a Cheerio object, not a string of HTML data.
- *
- * We check whether we're logged in at this point as well.
- */
-var parsePixivMedium = function parsePixivMedium($, url) {
-  // Check if we're logged in. If we aren't, we cannot get original size images.
-  var isLoggedIn = !$('link[rel="stylesheet"][href*="pre-login.css"]').length;
-
-  // Check if this is an error page.
-  var isError = $('.error-title').length > 0;
-  if (isError) return { isError: isError, isLoggedIn: isLoggedIn
-
-    // No error, so scrape the page.
-  };var $info = isLoggedIn ? $('.work-info') : $('.cool-work');
-  var $work = $('.works_display');
-  var $author = isLoggedIn ? $('._user-profile-card .profile') : $('.userdata-row');
-
-  var title = $('h1.title', $info).text().trim();
-  var desc = $(isLoggedIn ? '.ui-expander-container p.caption' : '#caption_long', $info).text().trim();
-  var views = Number($(isLoggedIn ? '.user-reaction .view-count' : '.cool-work-sub li.info:first-child .views', $info).text().trim());
-  var likes = Number($(isLoggedIn ? '.user-reaction .rated-count' : '.cool-work-sub li.info:last-child .views', $info).text().trim());
-
-  // I'm not entirely sure why the R-18 breadcrumbs don't always show up.
-  // Or maybe it only doesn't show up on medium pages that lead to an RTL manga.
-  // Either way, this should cover every possibility.
-  var isR18Base = isLoggedIn ? $('.meta .r-18', $info).length > 0 : $('.breadcrumb a[href*="R-18"]').length > 0;
-  var isR18GBase = isLoggedIn ? $('.meta .r-18g', $info).length > 0 : $('.breadcrumb a[href*="R-18G"]').length > 0;
-  var isR18Image = $('.r18-image').length > 1;
-  // R18G is only in the keywords...
-  var isR18GKeyword = $('meta[name="keywords"]').attr('content').split(',').indexOf('R-18G') > -1;
-  var isR18 = isR18Base || isR18Image;
-  var isR18G = isR18GBase || isR18GKeyword;
-
-  var isAnimation = $('._ugoku-illust-player-container', $work).length > 0;
-  var tags = $(isLoggedIn ? '.tags .tag a.text' : '#tag_area .tag a.text').map(function (n, tag) {
-    return $(tag).text().trim();
-  }).get();
-  var authorName = $(isLoggedIn ? '.user-name' : 'a', $author).text().trim();
-
-  // When retrieving the author ID, it matters if we are logged in or not.
-  // If not logged in, the ID can be found elsewhere. First, try the logged in version.
-  var authorIDLI = $('.column-header .tabs a[href*="member.php?"]').attr('href');
-  var authorIDRaw = authorIDLI ? authorIDLI : $('.userdata-row .name a[href*="member.php?"]').attr('href');
-  var authorID = Number(authorIDRaw.match(memberID)[1]);
-
-  // Note: when logged in, if this node doesn't exist, it's a single image page.
-  // When NOT logged in, we don't know how many images there are. Save 'null' and figure it out later.
-  var imageCount = isLoggedIn ? Number($('.page-count span', $work).text().trim()) || 1 : null;
-  // If we're not logged in, run a check to see if there are multiple images at all
-  // (there should be a link). That way we know to request and parse the manga page.
-  var hasMultipleImages = isLoggedIn ? imageCount > 1 : $('.img-container a._work').hasClass('multiple');
-
-  // If there's only one image, it will be right there on the page.
-  // If not, we will return an empty array to fill in later.
-  var images = [];
-  if (!hasMultipleImages && !isAnimation) {
-    images.push(scrapePixivSingleImage($, url, isLoggedIn));
-  } else if (!hasMultipleImages && isAnimation) {
-    images.push(scrapePixivAnimation($, url));
-  }
-
-  return {
-    title: title,
-    desc: desc,
-    images: images,
-    score: {
-      views: views,
-      likes: likes
-    },
-    author: {
-      authorID: authorID,
-      authorName: authorName
-    },
-    imageCount: imageCount,
-    hasMultipleImages: hasMultipleImages,
-    tags: tags,
-    isSFW: !isR18 && !isR18G,
-    isR18: isR18,
-    isR18G: isR18G,
-    isAnimation: isAnimation,
-    isLoggedIn: isLoggedIn
-  };
-};
-
-/**
  * Scrapse a Pixiv member page and extracts information. We only extract profile information,
  * not work environment information. Every piece of information that isn't found is returned as null.
  * Call with a Cheerio object, not a string of HTML data.
@@ -292,7 +144,7 @@ var parsePixivAuthor = function parsePixivAuthor($) {
   // We convert to HTML, then manually replace <br> tags.
   // Since the HTML is encoded using numerical character references (e.g. &#x30B9; = ス) we decode it here as well.
   var bioRaw = filterTDs($, $tds, '自己紹介').next().html();
-  var bio = bioRaw ? _he2.default.decode(bioRaw.replace(bioBr, '\n')) : null;
+  var bio = bioRaw ? _he2.default.decode(bioRaw.replace(/<br\s*\/?>/ig, '\n')) : null;
 
   var gender = filterGender(filterTDs($, $tds, '性別').next().text().trim());
   var address = filterTDs($, $tds, '住所').next().text().trim() || null;
@@ -357,15 +209,20 @@ var parsePixivManga = function parsePixivManga($, url) {
   }
 
   // On regular manga pages, it's a bit more straightforward.
-  var id = url.match(illustID)[1];
+  // Extract the ID from the URL.
+  var id = url.match(/illust_id=([0-9]+)/)[1];
   var $containers = $('.item-container img.image');
   // Very confusing. jQuery's map() has the counter first. Regular map() has it after.
   var masterImages = $containers.map(function (n, img) {
     return $(img).attr('data-src').trim();
   }).get();
   var originalImages = masterImages.map(function (img, n) {
-    return { src: [pixivImgToOriginal(img), pixivMangaBigLink(id, n)] };
+    return {
+      srcMightBe: [(0, _name.swapExt)(pixivImgToOriginal(img)), pixivMangaBigLink(id, n)],
+      src: [pixivImgToOriginal(img), pixivMangaBigLink(id, n)]
+    };
   });
+
   return originalImages;
 };
 
@@ -455,7 +312,7 @@ var fetchPixivSingle = exports.fetchPixivSingle = function () {
           case 3:
             html = _context3.sent;
             $mediumHTML = _cheerio2.default.load(html);
-            mediumInfo = parsePixivMedium($mediumHTML, url);
+            mediumInfo = (0, _medium.parsePixivMedium)($mediumHTML, url);
 
             // Return early if this is an error page.
 

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -12,5 +12,5 @@ Object.defineProperty(exports, "__esModule", {
  * Checks whether something is an array or not.
  */
 var isArray = exports.isArray = function isArray(v) {
-  return v.constructor === Array;
+  return v.constructor === Array || v.constructor.toString().indexOf(' Array()') > -1;
 };

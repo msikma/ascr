@@ -19,6 +19,8 @@ var _cookies = require('./cookies');
 
 var _cookies2 = _interopRequireDefault(_cookies);
 
+var _request = require('./request');
+
 var _name = require('./name');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -68,21 +70,25 @@ var downloadAllFiles = exports.downloadAllFiles = function downloadAllFiles(info
 
     return new Promise(function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(resolve) {
-        var fullPath;
+        var fullPath, mightBeURL, mightBeName;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 // If we're not overwriting existing files, run avoidDuplicates() to ensure the filename is unique.
                 fullPath = overwrite ? path.full : (0, _name.avoidDuplicates)(path.full);
-                _context.next = 3;
-                return (0, _requestAsBrowser.downloadFileAsBrowser)(url, fullPath, _cookies2.default.jar, headers);
+                // Our really big Pixiv hack.
 
-              case 3:
+                mightBeURL = image.srcMightBe ? image.srcMightBe[0] : null;
+                mightBeName = mightBeURL ? overwrite ? (0, _name.swapExt)(path.full) : (0, _name.avoidDuplicates)((0, _name.swapExt)(path.full)) : null;
+                _context.next = 5;
+                return (0, _requestAsBrowser.downloadFileAsBrowser)(url, fullPath, _cookies2.default.jar, headers, true, {}, mightBeURL, mightBeName);
+
+              case 5:
                 updateProgress(++counter, total);
                 resolve(fullPath);
 
-              case 5:
+              case 7:
               case 'end':
                 return _context.stop();
             }

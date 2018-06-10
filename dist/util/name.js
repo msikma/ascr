@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.avoidDuplicates = exports.getExtAndBase = exports.imageName = undefined;
+exports.avoidDuplicates = exports.getExtAndBase = exports.imageName = exports.swapExt = undefined;
 
 var _fs = require('fs');
 
@@ -20,6 +20,20 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var nameSeparator = ' - ';
 var azSeparator = '-';
+
+/**
+ * When downloading multiple images from Pixiv, the largest size image might be
+ * a JPG or it might be a PNG. The cheapest strategy is to try and download
+ * the JPG first, and if it's a 404, download the PNG.
+ */
+var swapExt = exports.swapExt = function swapExt(url) {
+  var eb = getExtAndBase(url);
+  if (eb.ext === 'jpg' || eb.ext === 'jpeg') {
+    return eb.fn + '.png';
+  } else {
+    return eb.fn + '.jpg';
+  }
+};
 
 /**
  * Returns a filename and directory name suggestion for files we download.

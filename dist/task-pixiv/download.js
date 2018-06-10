@@ -5,6 +5,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.downloadPixivImages = undefined;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
+                                                                                                                                                                                                                                                                   * Copyright © 2018, Michiel Sikma
+                                                                                                                                                                                                                                                                   */
+
 var _chalk = require('chalk');
 
 var _chalk2 = _interopRequireDefault(_chalk);
@@ -21,22 +26,18 @@ var _name = require('../util/name');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * Copyright © 2018, Michiel Sikma
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 /**
  * Returns the headers necessary to scrape images from multi-image Pixiv works.
  * Requires a referrer URL to be set.
  */
 var pixivHeaders = function pixivHeaders(referrer) {
-  return {
+  return _extends({
     'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
     'Cache-Control': 'no-cache',
-    'Authority': 'i.pximg.net',
-    'Referer': referrer
-  };
+    'Authority': 'i.pximg.net'
+  }, referrer ? { 'Referer': referrer } : {});
 };
 
 /**

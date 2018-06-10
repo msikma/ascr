@@ -68,6 +68,13 @@ var replaceNode = function replaceNode($, $selector, formatter) {
 };
 
 /**
+ * Replaces linebreaks with newlines.
+ */
+var replaceBreaks = function replaceBreaks($) {
+  return $('br').replaceWith('\n');
+};
+
+/**
  * Replaces HTML blockquotes with indented text.
  */
 var replaceBlockquotes = function replaceBlockquotes($) {
@@ -143,6 +150,8 @@ var indentWrap = exports.indentWrap = function indentWrap(input, width) {
  * Converts an HTML string to something we can display in a terminal.
  */
 var htmlToTerm = exports.htmlToTerm = function htmlToTerm(html) {
+  var convertLinebreaks = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
   var $ = _cheerio2.default.load(html);
   replaceNode($, $('b, strong'), function (text) {
     return _chalk2.default.bold(text);
@@ -160,5 +169,8 @@ var htmlToTerm = exports.htmlToTerm = function htmlToTerm(html) {
     return '\n' + text + '\n';
   });
   replaceBlockquotes($);
+  if (convertLinebreaks) {
+    replaceBreaks($);
+  }
   return filterLinebreaks($.text());
 };
