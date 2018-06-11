@@ -3,7 +3,7 @@
  * Copyright © 2018, Michiel Sikma
  */
 
-import Table, { utils } from 'cli-table2'
+import Table, { utils } from 'cli-table3'
 import chalk from 'chalk'
 
 import { indentWrap, bulletize } from './format'

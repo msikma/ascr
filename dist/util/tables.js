@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.mainTable = exports.topTable = exports.progressBar = undefined;
 
-var _cliTable = require('cli-table2');
+var _cliTable = require('cli-table3');
 
 var _cliTable2 = _interopRequireDefault(_cliTable);
 

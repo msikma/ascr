@@ -28,7 +28,7 @@
     "babel-polyfill": "^6.1.0",
     "chalk": "^2.3.1",
     "cheerio": "^1.0.0-rc.2",
-    "cli-table2": "git://github.com/msikma/cli-table2#2b8f27a",
+    "cli-table3": "^0.5.0",
     "draftlog": "^1.0.12",
     "file-cookie-store": "msikma/file-cookie-store",
     "filesize": "^3.6.0",
