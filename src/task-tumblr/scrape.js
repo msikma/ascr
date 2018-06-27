@@ -28,10 +28,12 @@ const getImagesFromHTML = (html) => {
 const getImagesFromPost = (embeddedPostData, authorSub) => {
   // Retrieve the images. Posts that have replies from other people can have images, too.
   // That's why we keep an 'author' field for every individual image.
-  const trailImages = embeddedPostData.trail.reduce((acc, post) => (
+  const trailData = embeddedPostData.trail || []
+  const postData = embeddedPostData.photos || []
+  const trailImages = trailData.reduce((acc, post) => (
     [...acc, ...getImagesFromHTML(post.content_raw).map(img => ({ src: [img, null], author: post.blog.name }))]
   ), [])
-  const postImages = embeddedPostData.photos.reduce((acc, photo) => (
+  const postImages = postData.reduce((acc, photo) => (
     [...acc, { src: [photo.original_size.url, null], author: authorSub }]
   ), [])
   return [...postImages, ...trailImages]
