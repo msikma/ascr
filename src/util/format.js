@@ -117,6 +117,7 @@ export const indentWrap = (input, width, linebreak = '\n') => (
  * Converts an HTML string to something we can display in a terminal.
  */
 export const htmlToTerm = (html, convertLinebreaks = false) => {
+  if (!html) return ''
   const $ = cheerio.load(html)
   replaceNode($, $('b, strong'), text => chalk.bold(text))
   replaceNode($, $('i, em'), text => chalk.italic(text))
