@@ -24,7 +24,7 @@ var cookieJar = {
    * Without cookies, all requests will be logged out. This particularly affects Pixiv.
    */
 };var loadCookies = exports.loadCookies = function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(file) {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(file, isDefault) {
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -38,21 +38,34 @@ var cookieJar = {
             return _context.abrupt('return');
 
           case 3:
-            _context.next = 5;
+            _context.prev = 3;
+            _context.next = 6;
             return (0, _requestAsBrowser.loadCookieFile)(file);
 
-          case 5:
-            cookieJar.jar = _context.sent.jar;
-
           case 6:
+            cookieJar.jar = _context.sent.jar;
+            _context.next = 13;
+            break;
+
+          case 9:
+            _context.prev = 9;
+            _context.t0 = _context['catch'](3);
+
+            // Couldn't load cookie file.
+            if (!isDefault) {
+              console.warn('ascr: warning: could not load cookie file: ' + file);
+            }
+            cookieJar.jar = null;
+
+          case 13:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, undefined);
+    }, _callee, undefined, [[3, 9]]);
   }));
 
-  return function loadCookies(_x) {
+  return function loadCookies(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();

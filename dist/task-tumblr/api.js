@@ -41,6 +41,7 @@ var initializeClient = function initializeClient(credentials) {
 var findAPIKeys = exports.findAPIKeys = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
     var tumblrJSON = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var isDefault = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
     var data;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -72,17 +73,22 @@ var findAPIKeys = exports.findAPIKeys = function () {
 
           case 10:
             console.log('ascr: error: found a tumblr.json file, but it did not contain \'consumer_key\' or \'consumer_secret\'.');
-            _context.next = 15;
+            _context.next = 16;
             break;
 
           case 13:
             _context.prev = 13;
             _context.t2 = _context['catch'](2);
 
-          case 15:
-            return _context.abrupt('return', false);
+            // Only log an error if the user specified a non-default.
+            if (!isDefault) {
+              console.warn('ascr: warning: could not load tumblr.json file: ' + tumblrJSON);
+            }
 
           case 16:
+            return _context.abrupt('return', false);
+
+          case 17:
           case 'end':
             return _context.stop();
         }
@@ -150,7 +156,7 @@ var fetchDataViaAPI = exports.fetchDataViaAPI = function () {
     }, _callee2, undefined);
   }));
 
-  return function fetchDataViaAPI(_x2, _x3) {
+  return function fetchDataViaAPI(_x3, _x4) {
     return _ref2.apply(this, arguments);
   };
 }();

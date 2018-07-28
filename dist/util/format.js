@@ -152,6 +152,7 @@ var indentWrap = exports.indentWrap = function indentWrap(input, width) {
 var htmlToTerm = exports.htmlToTerm = function htmlToTerm(html) {
   var convertLinebreaks = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
+  if (!html) return '';
   var $ = _cheerio2.default.load(html);
   replaceNode($, $('b, strong'), function (text) {
     return _chalk2.default.bold(text);

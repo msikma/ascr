@@ -51,12 +51,14 @@ var getImagesFromHTML = function getImagesFromHTML(html) {
 var getImagesFromPost = function getImagesFromPost(embeddedPostData, authorSub) {
   // Retrieve the images. Posts that have replies from other people can have images, too.
   // That's why we keep an 'author' field for every individual image.
-  var trailImages = embeddedPostData.trail.reduce(function (acc, post) {
+  var trailData = embeddedPostData.trail || [];
+  var postData = embeddedPostData.photos || [];
+  var trailImages = trailData.reduce(function (acc, post) {
     return [].concat(_toConsumableArray(acc), _toConsumableArray(getImagesFromHTML(post.content_raw).map(function (img) {
       return { src: [img, null], author: post.blog.name };
     })));
   }, []);
-  var postImages = embeddedPostData.photos.reduce(function (acc, photo) {
+  var postImages = postData.reduce(function (acc, photo) {
     return [].concat(_toConsumableArray(acc), [{ src: [photo.original_size.url, null], author: authorSub }]);
   }, []);
   return [].concat(_toConsumableArray(postImages), _toConsumableArray(trailImages));
@@ -144,13 +146,14 @@ var scrapeRelevantData = function scrapeRelevantData(embeddedPostData) {
 var fetchTumblrSingle = exports.fetchTumblrSingle = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(urlStr) {
     var tumblrJSON = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    var isDefault = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     var apiKeys;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return (0, _api.findAPIKeys)(tumblrJSON);
+            return (0, _api.findAPIKeys)(tumblrJSON, isDefault);
 
           case 2:
             apiKeys = _context.sent;
@@ -185,7 +188,7 @@ var fetchTumblrSingle = exports.fetchTumblrSingle = function () {
     }, _callee, undefined);
   }));
 
-  return function fetchTumblrSingle(_x2) {
+  return function fetchTumblrSingle(_x3) {
     return _ref.apply(this, arguments);
   };
 }();
