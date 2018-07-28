@@ -74,9 +74,13 @@ if (['gif', 'webm', 'none'].indexOf(args.type) === -1) {
 // Default the cookie file to the root directory's 'cookies.txt'.
 // If the cookies argument was passed on the command line, make that leading.
 // We follow the XDG specification. The cookie file is in ~/.config/ascr/cookies.txt by default.
-args.cookies = args.cookies || process.env.ASCR_COOKIE_FILE || path.join(process.env.HOME, '.config', 'ascr', 'cookies.txt')
+const defaultCookieFile = path.join(process.env.HOME, '.config', 'ascr', 'cookies.txt')
+const defaultTumblrJSONFile = path.join(process.env.HOME, '.config', 'ascr', 'tumblr.json')
+args.cookies = args.cookies || process.env.ASCR_COOKIE_FILE || defaultCookieFile
+args.cookiesIsDefault = args.cookies === defaultCookieFile
 // Do the same for tumblr.json, which contains Tumblr API keys.
-args.tumblrJSON = args.t_api || process.env.ASCR_TUMBLR_JSON || path.join(process.env.HOME, '.config', 'ascr', 'tumblr.json')
+args.tumblrJSON = args.t_api || process.env.ASCR_TUMBLR_JSON || defaultTumblrJSONFile
+args.tumblrJSONIsDefault = args.tumblrJSON === defaultTumblrJSONFile
 
 // Fire up the main application.
 require('babel-polyfill')
