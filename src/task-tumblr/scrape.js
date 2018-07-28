@@ -119,10 +119,10 @@ const scrapeRelevantData = (embeddedPostData) => {
  * Main entry point. Takes a Tumblr URL and retrieves its contents in a structured form.
  * To get the data we need to do two request calls.
  */
-export const fetchTumblrSingle = async (urlStr, tumblrJSON = null) => {
+export const fetchTumblrSingle = async (urlStr, tumblrJSON = null, isDefault = true) => {
   // Check to see if the user is supplying API keys as per the readme file.
   // If not, this will return false.
-  const apiKeys = await findAPIKeys(tumblrJSON)
+  const apiKeys = await findAPIKeys(tumblrJSON, isDefault)
   // If no API keys, attempt to get post data through the oEmbed API.
   if (!apiKeys) return scrapeRelevantData(await fetchDataViaOEmbed(urlStr))
   // Else, run the API code.

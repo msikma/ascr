@@ -22,7 +22,7 @@ const initializeClient = (credentials) => {
  * If no keys could be found, false is returned. In that case we'll use the oEmbed route
  * to get a post URL's information.
  */
-export const findAPIKeys = async (tumblrJSON = null) => {
+export const findAPIKeys = async (tumblrJSON = null, isDefault = true) => {
   if (!tumblrJSON) return false
 
   try {
@@ -31,7 +31,10 @@ export const findAPIKeys = async (tumblrJSON = null) => {
     console.log(`ascr: error: found a tumblr.json file, but it did not contain 'consumer_key' or 'consumer_secret'.`)
   }
   catch (err) {
-    // No need to handle, since this is optional.
+    // Only log an error if the user specified a non-default.
+    if (!isDefault) {
+      console.warn(`ascr: warning: could not load tumblr.json file: ${tumblrJSON}`)
+    }
   }
   return false
 }

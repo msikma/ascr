@@ -17,13 +17,22 @@ const cookieJar = {
  * Cookies must be exported from the browser in Netscape cookie file format.
  * Without cookies, all requests will be logged out. This particularly affects Pixiv.
  */
-export const loadCookies = async (file) => {
+export const loadCookies = async (file, isDefault) => {
   // If passing a null value, just delete the jar and go back to logged out calls.
   if (!file) {
     cookieJar.jar = null
     return
   }
-  cookieJar.jar = (await loadCookieFile(file)).jar
+  try {
+    cookieJar.jar = (await loadCookieFile(file)).jar
+  }
+  catch (err) {
+    // Couldn't load cookie file.
+    if (!isDefault) {
+      console.warn(`ascr: warning: could not load cookie file: ${file}`)
+    }
+    cookieJar.jar = null
+  }
 }
 
 export default cookieJar

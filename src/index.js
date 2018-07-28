@@ -18,12 +18,15 @@ import { downloadTumblrURL, isTumblrURL } from './task-tumblr'
  * All command line arguments are passed here.
  */
 export const run = async (args) => {
-  const { urls, name, author, cookies, tumblrJSON, dirMin, rawData, onlyData, type, inline, quiet, authorDir, noThread, overwrite } = args
+  const {
+    urls, name, author, cookies, cookiesIsDefault, tumblrJSON, tumblrJSONIsDefault,
+    dirMin, rawData, onlyData, type, inline, quiet, authorDir, noThread, overwrite
+  } = args
 
   const subset = subsetRange(args.subset)
 
   // Prepare our cookies for usage in URL download requests.
-  await loadCookies(cookies)
+  await loadCookies(cookies, cookiesIsDefault)
 
   // Completely silence all output if 'quiet' is 2.
   if (quiet === 2) {
@@ -39,7 +42,7 @@ export const run = async (args) => {
         await downloadTwitterURL(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, noThread, overwrite)
       }
       else if (isTumblrURL(url)) {
-        await downloadTumblrURL(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite, tumblrJSON)
+        await downloadTumblrURL(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite, tumblrJSON, tumblrJSONIsDefault)
       }
       else {
         console.log(`ascr: error: not a recognized URL scheme: ${url}`)
