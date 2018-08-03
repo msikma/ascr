@@ -46,7 +46,7 @@ const getURLInfo = (urlStr) => {
   try {
     // Get the hostname of the URL. We don't need to remove .tumblr.com.
     const blog = new URL(urlStr).host
-    const idMatches = urlStr.match(/\/([0-9]+)\//)
+    const idMatches = urlStr.match(/post\/([0-9]+)\/?/)
 
     return {
       blog,
