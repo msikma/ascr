@@ -108,7 +108,7 @@ var getURLInfo = function getURLInfo(urlStr) {
   try {
     // Get the hostname of the URL. We don't need to remove .tumblr.com.
     var blog = new _urlParse2.default(urlStr).host;
-    var idMatches = urlStr.match(/\/([0-9]+)\//);
+    var idMatches = urlStr.match(/post\/([0-9]+)\/?/);
 
     return {
       blog: blog,
