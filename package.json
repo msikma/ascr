@@ -1,7 +1,7 @@
 {
   "name": "ascr",
   "description": "Art Scraper - downloads artwork from websites for personal archiving.",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "homepage": "https://github.com/msikma/ascr",
   "main": "dist/index.js",
   "scripts": {
@@ -17,6 +17,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.1.0",
     "babel-preset-env": "^1.6.0",
     "babel-register": "^6.1.0",
+    "babel-cli": "^6.26.0",
     "eslint": "^4.4.1",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.2.0",
@@ -25,7 +26,6 @@
   },
   "dependencies": {
     "argparse": "1.0.10",
-    "babel-cli": "^6.26.0",
     "babel-polyfill": "^6.1.0",
     "chalk": "^2.3.1",
     "cheerio": "^1.0.0-rc.2",
@@ -38,13 +38,14 @@
     "mkdirp": "^0.5.1",
     "moment": "^2.21.0",
     "move-file": "^1.0.0",
-    "requestAsBrowser": "git://github.com/msikma/requestAsBrowser#26a3254",
+    "natives": "^1.1.6",
+    "request": "^2.87.0",
     "sanitize-filename": "^1.6.1",
     "strip-ansi": "^4.0.0",
     "tmp": "^0.0.33",
     "tumblr.js": "^1.1.1",
     "unzip": "^0.1.11",
-    "url-parse": "^1.4.0",
+    "url-parse": "^1.4.4",
     "wrap-ansi": "^3.0.1"
   }
 }

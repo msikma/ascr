@@ -5,10 +5,9 @@
 
 import fs from 'fs'
 import chalk from 'chalk'
-import { downloadFileAsBrowser } from 'requestAsBrowser'
 
 import cookieJar from './cookies'
-import { requestURL } from './request'
+import { downloadFileAsBrowser } from './request'
 import { imageName, getExtAndBase, avoidDuplicates, swapExt } from './name'
 
 // Prints a warning if a file already exists.

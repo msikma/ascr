@@ -13,8 +13,6 @@ var _chalk = require('chalk');
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
-var _requestAsBrowser = require('requestAsBrowser');
-
 var _cookies = require('./cookies');
 
 var _cookies2 = _interopRequireDefault(_cookies);
@@ -82,7 +80,7 @@ var downloadAllFiles = exports.downloadAllFiles = function downloadAllFiles(info
                 mightBeURL = image.srcMightBe ? image.srcMightBe[0] : null;
                 mightBeName = mightBeURL ? overwrite ? (0, _name.swapExt)(path.full) : (0, _name.avoidDuplicates)((0, _name.swapExt)(path.full)) : null;
                 _context.next = 5;
-                return (0, _requestAsBrowser.downloadFileAsBrowser)(url, fullPath, _cookies2.default.jar, headers, true, {}, mightBeURL, mightBeName);
+                return (0, _request.downloadFileAsBrowser)(url, fullPath, _cookies2.default.jar, headers, true, {}, mightBeURL, mightBeName);
 
               case 5:
                 updateProgress(++counter, total);

@@ -112,7 +112,7 @@ const parseTwitterPosts = ($, authorName, tweetID, noThread, is404 = false, isUn
 export const fetchTwitterSingle = async (url, noThread) => {
   // Extract username and tweet ID from the URL.
   const urlInfo = url.match(tweetCheck)
-  const html = await requestURL(url, safetyHeaders, true)
+  const html = await requestURL(url, false, safetyHeaders)
 
   // If the page is a 404, we don't get HTML (due to our headers specifying that this is an XHR).
   // Instead, we get JSON. If this is the case, we'll pass it on to the parser - it will then return

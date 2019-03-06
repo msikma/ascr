@@ -144,7 +144,7 @@ var fetchTwitterSingle = exports.fetchTwitterSingle = function () {
             // Extract username and tweet ID from the URL.
             urlInfo = url.match(_index.tweetCheck);
             _context.next = 3;
-            return (0, _request.requestURL)(url, safetyHeaders, true);
+            return (0, _request.requestURL)(url, false, safetyHeaders);
 
           case 3:
             html = _context.sent;
