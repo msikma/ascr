@@ -87,9 +87,9 @@ const saveBinaryFile = (data, dest) => (
 // This function has a higher chance of being permitted by the source site
 // since it's designed to look like a normal browser request rather than a script.
 // The request() function returns a promise, so remember to await.
-export const requestURL = (url, fullResponse = false, headers = {}, etc = {}) => new Promise((resolve, reject) => (
+export const requestURL = (url, fullResponse = false, headers = {}, etc = {}, useCookieJar = cookieJar.jar) => new Promise((resolve, reject) => (
   request(
-    { url, headers: { ...browserHeaders, ...(headers != null ? headers : {}) }, ...requestDefaults, ...etc },
+    { url, headers: { ...browserHeaders, ...(headers != null ? headers : {}) }, ...requestDefaults, ...etc, ...(useCookieJar ? { jar: useCookieJar } : {}) },
     (err, res, body) => {
       if (err) return reject(err)
       resolve(fullResponse ? res : body)

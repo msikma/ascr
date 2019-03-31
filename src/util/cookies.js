@@ -43,7 +43,8 @@ export const loadCookies = async (file) => {
     cookieJar.jar = null
     return
   }
-  cookieJar.jar = (await loadCookieFile(file)).jar
+  const newJar = await loadCookieFile(file)
+  cookieJar.jar = newJar
 }
 
 export default cookieJar
