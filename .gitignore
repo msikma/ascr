@@ -6,6 +6,7 @@
 
 # Development files.
 _source
+ascr-experimental
 _test
 _todo
 /testing
