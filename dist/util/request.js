@@ -144,8 +144,9 @@ var requestURL = exports.requestURL = function requestURL(url) {
   var fullResponse = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   var headers = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var etc = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var useCookieJar = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : _cookies2.default.jar;
   return new Promise(function (resolve, reject) {
-    return (0, _request2.default)(_extends({ url: url, headers: _extends({}, browserHeaders, headers != null ? headers : {}) }, requestDefaults, etc), function (err, res, body) {
+    return (0, _request2.default)(_extends({ url: url, headers: _extends({}, browserHeaders, headers != null ? headers : {}) }, requestDefaults, etc, useCookieJar ? { jar: useCookieJar } : {}), function (err, res, body) {
       if (err) return reject(err);
       resolve(fullResponse ? res : body);
     });

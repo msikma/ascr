@@ -51,6 +51,7 @@ var cookieJar = {
  */
 var loadCookies = exports.loadCookies = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(file) {
+    var newJar;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -68,9 +69,11 @@ var loadCookies = exports.loadCookies = function () {
             return loadCookieFile(file);
 
           case 5:
-            cookieJar.jar = _context.sent.jar;
+            newJar = _context.sent;
 
-          case 6:
+            cookieJar.jar = newJar;
+
+          case 7:
           case 'end':
             return _context.stop();
         }
