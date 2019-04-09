@@ -81,7 +81,11 @@ export const parsePixivMedium = ($, url) => {
 
   // Check if this is an error page.
   const isError = $('.error-title').length > 0
-  if (isError) return { isError, isLoggedIn }
+  if (isError) return { isError }
+
+  // Check to see if we're blocked from viewing this page due to being guest.
+  const isBlocked = $('.r18-image .introduction-modal .title').length > 0
+  if (isBlocked) return { isError: true, isBlocked }
 
   // No error, so scrape the page.
   // The new (post late May 2018) page has a convenient JS object full of all the information we need.
