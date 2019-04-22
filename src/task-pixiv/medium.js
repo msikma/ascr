@@ -95,7 +95,7 @@ export const parsePixivMedium = ($, url) => {
   const bootstrapData = findScriptData(bootstrapJS).sandbox.globalInitData
   const illustData = bootstrapData.preload.illust[illustID]
   const userData = bootstrapData.preload.user[illustData.userId]
-
+  
   // Now we just pick the data right out of the bootstrap object.
   const title = illustData.illustTitle
   const desc = htmlToTerm(illustData.illustComment, true)
@@ -123,6 +123,7 @@ export const parsePixivMedium = ($, url) => {
   const images = imageCount === 1 ? [{ src: [illustData.urls.original, pixivURLMode(url, 'manga')] }] : []
 
   return {
+    id: illustID,
     title,
     desc,
     images,

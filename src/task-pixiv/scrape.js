@@ -5,7 +5,7 @@
 
 import cheerio from 'cheerio'
 import he from 'he'
-import { merge } from 'lodash'
+import { merge, get } from 'lodash'
 
 import { parsePixivMedium } from './medium'
 import { getExtAndBase, swapExt } from '../util/name'
@@ -18,6 +18,13 @@ import { requestURL } from '../util/request'
 export const pixivURLMode = (url, type = 'medium') => {
   return url.replace(/(member_illust\.php\?mode=)(.+?)(&)/, `$1${type}$3`)
 }
+
+/**
+ * Returns a URL for making a JSON request for the images of a work.
+ */
+export const pixivAjaxURL = (id) => (
+  `https://www.pixiv.net/ajax/illust/${id}/pages`
+)
 
 /**
  * Returns the URL for a big image link inside of a manga page.
@@ -198,6 +205,17 @@ const parsePixivManga = ($, url) => {
 }
 
 /**
+ * Extracts images from Pixiv JSON requests.
+ */
+const fetchPixivImageJSON = async (id, referrer) => {
+  const url = pixivAjaxURL(id)
+  const res = await requestURL(url)
+  const data = JSON.parse(res)
+  const images = get(data, 'body', [])
+  return images.map(img => ({ src: [img.urls.original, referrer] }));
+}
+
+/**
  * Loads HTML for a Pixiv multiple images page (the 'manga' page)
  * and returns its images.
  */
@@ -220,8 +238,13 @@ const fetchPixivAuthor = async (authorURL) => {
  * We potentially need to fetch two additional pages to complete the work: the author's top page (to get
  * their profile information), and the work's 'see more' page (the 'manga' page, on works with multiple images).
  * This could potentially take some time.
+ * 
+ * Pixiv recently removed their 'manga' pages (separate pages that contain all the images), in favor
+ * of loading the images with JSON and adding them to the main illustration page.
+ * It's still possible to load the 'manga' pages if they ever come back (they were AB testing it earlier)
+ * but for now 'useJSONRequest' is true by default, which loads the JSON request.
  */
-export const fetchPixivSingle = async (rawURL, includeAuthorInfo = true) => {
+export const fetchPixivSingle = async (rawURL, includeAuthorInfo = true, useJSONRequest = true) => {
   // Ensure we're loading the ?mode=medium page.
   const url = pixivURLMode(rawURL, 'medium')
   const html = await requestURL(url)
@@ -238,7 +261,12 @@ export const fetchPixivSingle = async (rawURL, includeAuthorInfo = true) => {
   const tasks = []
   if (mediumInfo.hasMultipleImages) {
     // Fetch HTML for the manga page and return the image links.
-    tasks.push(fetchPixivManga(pixivURLMode(url, 'manga')))
+    if (useJSONRequest) {
+      tasks.push(fetchPixivImageJSON(mediumInfo.id, url))
+    }
+    else {
+      tasks.push(fetchPixivManga(pixivURLMode(url, 'manga')))
+    }
   }
   if (includeAuthorInfo) {
     // Fetch the author's top page for their profile information.
