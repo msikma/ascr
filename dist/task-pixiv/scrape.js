@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fetchPixivSingle = exports.pixivURLMode = undefined;
+exports.fetchPixivSingle = exports.pixivAjaxURL = exports.pixivURLMode = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -41,6 +41,13 @@ var pixivURLMode = exports.pixivURLMode = function pixivURLMode(url) {
   var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'medium';
 
   return url.replace(/(member_illust\.php\?mode=)(.+?)(&)/, '$1' + type + '$3');
+};
+
+/**
+ * Returns a URL for making a JSON request for the images of a work.
+ */
+var pixivAjaxURL = exports.pixivAjaxURL = function pixivAjaxURL(id) {
+  return 'https://www.pixiv.net/ajax/illust/' + id + '/pages';
 };
 
 /**
@@ -227,25 +234,28 @@ var parsePixivManga = function parsePixivManga($, url) {
 };
 
 /**
- * Loads HTML for a Pixiv multiple images page (the 'manga' page)
- * and returns its images.
+ * Extracts images from Pixiv JSON requests.
  */
-var fetchPixivManga = function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(mangaURL) {
-    var html, $mangaHTML;
+var fetchPixivImageJSON = function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(id, referrer) {
+    var url, res, data, images;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
-            return (0, _request.requestURL)(mangaURL);
+            url = pixivAjaxURL(id);
+            _context.next = 3;
+            return (0, _request.requestURL)(url);
 
-          case 2:
-            html = _context.sent;
-            $mangaHTML = _cheerio2.default.load(html);
-            return _context.abrupt('return', parsePixivManga($mangaHTML, mangaURL));
+          case 3:
+            res = _context.sent;
+            data = JSON.parse(res);
+            images = (0, _lodash.get)(data, 'body', []);
+            return _context.abrupt('return', images.map(function (img) {
+              return { src: [img.urls.original, referrer] };
+            }));
 
-          case 5:
+          case 7:
           case 'end':
             return _context.stop();
         }
@@ -253,31 +263,31 @@ var fetchPixivManga = function () {
     }, _callee, undefined);
   }));
 
-  return function fetchPixivManga(_x2) {
+  return function fetchPixivImageJSON(_x2, _x3) {
     return _ref.apply(this, arguments);
   };
 }();
 
 /**
- * Loads HTML for a Pixiv author and returns information parsed from the page.
+ * Loads HTML for a Pixiv multiple images page (the 'manga' page)
+ * and returns its images.
  */
-var fetchPixivAuthor = function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(authorURL) {
-    var $authorHTML;
+var fetchPixivManga = function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(mangaURL) {
+    var html, $mangaHTML;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.t0 = _cheerio2.default;
-            _context2.next = 3;
-            return (0, _request.requestURL)(authorURL);
+            _context2.next = 2;
+            return (0, _request.requestURL)(mangaURL);
 
-          case 3:
-            _context2.t1 = _context2.sent;
-            $authorHTML = _context2.t0.load.call(_context2.t0, _context2.t1);
-            return _context2.abrupt('return', parsePixivAuthor($authorHTML));
+          case 2:
+            html = _context2.sent;
+            $mangaHTML = _cheerio2.default.load(html);
+            return _context2.abrupt('return', parsePixivManga($mangaHTML, mangaURL));
 
-          case 6:
+          case 5:
           case 'end':
             return _context2.stop();
         }
@@ -285,8 +295,40 @@ var fetchPixivAuthor = function () {
     }, _callee2, undefined);
   }));
 
-  return function fetchPixivAuthor(_x3) {
+  return function fetchPixivManga(_x4) {
     return _ref2.apply(this, arguments);
+  };
+}();
+
+/**
+ * Loads HTML for a Pixiv author and returns information parsed from the page.
+ */
+var fetchPixivAuthor = function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(authorURL) {
+    var $authorHTML;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.t0 = _cheerio2.default;
+            _context3.next = 3;
+            return (0, _request.requestURL)(authorURL);
+
+          case 3:
+            _context3.t1 = _context3.sent;
+            $authorHTML = _context3.t0.load.call(_context3.t0, _context3.t1);
+            return _context3.abrupt('return', parsePixivAuthor($authorHTML));
+
+          case 6:
+          case 'end':
+            return _context3.stop();
+        }
+      }
+    }, _callee3, undefined);
+  }));
+
+  return function fetchPixivAuthor(_x5) {
+    return _ref3.apply(this, arguments);
   };
 }();
 
@@ -295,33 +337,39 @@ var fetchPixivAuthor = function () {
  * We potentially need to fetch two additional pages to complete the work: the author's top page (to get
  * their profile information), and the work's 'see more' page (the 'manga' page, on works with multiple images).
  * This could potentially take some time.
+ * 
+ * Pixiv recently removed their 'manga' pages (separate pages that contain all the images), in favor
+ * of loading the images with JSON and adding them to the main illustration page.
+ * It's still possible to load the 'manga' pages if they ever come back (they were AB testing it earlier)
+ * but for now 'useJSONRequest' is true by default, which loads the JSON request.
  */
 var fetchPixivSingle = exports.fetchPixivSingle = function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(rawURL) {
+  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(rawURL) {
     var includeAuthorInfo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    var useJSONRequest = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     var url, html, $mediumHTML, mediumInfo, tasks, info, data;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
             // Ensure we're loading the ?mode=medium page.
             url = pixivURLMode(rawURL, 'medium');
-            _context3.next = 3;
+            _context4.next = 3;
             return (0, _request.requestURL)(url);
 
           case 3:
-            html = _context3.sent;
+            html = _context4.sent;
             $mediumHTML = _cheerio2.default.load(html);
             mediumInfo = (0, _medium.parsePixivMedium)($mediumHTML, url);
 
             // Return early if this is an error page.
 
             if (!mediumInfo.isError) {
-              _context3.next = 8;
+              _context4.next = 8;
               break;
             }
 
-            return _context3.abrupt('return', mediumInfo);
+            return _context4.abrupt('return', mediumInfo);
 
           case 8:
 
@@ -333,7 +381,11 @@ var fetchPixivSingle = exports.fetchPixivSingle = function () {
 
             if (mediumInfo.hasMultipleImages) {
               // Fetch HTML for the manga page and return the image links.
-              tasks.push(fetchPixivManga(pixivURLMode(url, 'manga')));
+              if (useJSONRequest) {
+                tasks.push(fetchPixivImageJSON(mediumInfo.id, url));
+              } else {
+                tasks.push(fetchPixivManga(pixivURLMode(url, 'manga')));
+              }
             }
             if (includeAuthorInfo) {
               // Fetch the author's top page for their profile information.
@@ -341,11 +393,11 @@ var fetchPixivSingle = exports.fetchPixivSingle = function () {
             }
 
             // After we fetch the rest of the data, merge it all together.
-            _context3.next = 13;
+            _context4.next = 13;
             return Promise.all(tasks);
 
           case 13:
-            info = _context3.sent;
+            info = _context4.sent;
             data = _extends({}, mediumInfo, { author: _extends({}, mediumInfo.author) });
 
             if (mediumInfo.hasMultipleImages) {
@@ -356,17 +408,17 @@ var fetchPixivSingle = exports.fetchPixivSingle = function () {
             }
 
             // In case we are not logged in, we weren't able to get the image count earlier.
-            return _context3.abrupt('return', _extends({}, data, { imageCount: data.images.length }));
+            return _context4.abrupt('return', _extends({}, data, { imageCount: data.images.length }));
 
           case 18:
           case 'end':
-            return _context3.stop();
+            return _context4.stop();
         }
       }
-    }, _callee3, undefined);
+    }, _callee4, undefined);
   }));
 
-  return function fetchPixivSingle(_x5) {
-    return _ref3.apply(this, arguments);
+  return function fetchPixivSingle(_x8) {
+    return _ref4.apply(this, arguments);
   };
 }();

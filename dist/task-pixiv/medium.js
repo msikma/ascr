@@ -154,6 +154,7 @@ var parsePixivMedium = exports.parsePixivMedium = function parsePixivMedium($, u
   var images = imageCount === 1 ? [{ src: [illustData.urls.original, (0, _scrape.pixivURLMode)(url, 'manga')] }] : [];
 
   return _ref = {
+    id: illustID,
     title: title,
     desc: desc,
     images: images,
