@@ -47,40 +47,39 @@ var pixivHeaders = function pixivHeaders(referrer) {
  */
 var downloadPixivImages = exports.downloadPixivImages = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(info, forceName, forceAuthor, subset, dirMin, authorDir, type, overwrite) {
-    var total, name, author, baseExt, totalDl, makeDir, baseName, makeAnimation, progress, updateProgress, files;
+    var totalGet, name, author, baseExt, makeDir, baseName, makeAnimation, progress, updateProgress, files;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             // If we're downloading multiple images, just print the name of the first one
             // as an example for how the rest will be named.
-            total = info.imageCount;
+            totalGet = subset.length ? subset.length : info.imageCount;
             name = forceName || info.title;
             author = forceAuthor || info.author.authorName;
             baseExt = (0, _name.getExtAndBase)(info.images[0].src[0]).ext;
-            totalDl = subset.length > 0 ? subset.length : total;
-            makeDir = dirMin !== 0 && dirMin <= total;
+            makeDir = dirMin !== 0 && dirMin <= totalGet;
 
             // If there are enough images, we store them in a directory. Create that directory now, if needed.
 
-            baseName = (0, _name.imageName)(name, author, makeDir, authorDir, 1, total, baseExt);
+            baseName = (0, _name.imageName)(name, author, makeDir, authorDir, 1, totalGet, baseExt);
 
             if (!baseName.dirs.length) {
-              _context.next = 10;
+              _context.next = 9;
               break;
             }
 
-            _context.next = 10;
+            _context.next = 9;
             return (0, _files.makeDirectory)(baseName.dirs);
 
-          case 10:
+          case 9:
             // If we're downloading an animation, we'll either save it to .zip or make a .gif/.webm.
             // In all other cases, we just keep the same extension. Determine which one it is here.
             makeAnimation = info.isAnimation && baseExt === 'zip' && type !== 'none';
 
             console.log('');
-            console.log('Downloading to ' + _chalk2.default.red(baseName.full) + (total > 1 ? ' (' + (subset.length > 0 ? 'subset: ' : '') + totalDl + ' image' + (totalDl > 1 ? 's' : '') + ')' : '') + '...');
-            progress = console.draft((0, _tables.progressBar)(0, total));
+            console.log('Downloading to ' + _chalk2.default.red(baseName.full) + (totalGet > 1 ? ' (' + (subset.length ? 'subset: ' : '') + totalGet + ' image' + (totalGet > 1 ? 's' : '') + (subset.length ? ' of ' + info.imageCount : '') + ')' : '') + '...');
+            progress = console.draft((0, _tables.progressBar)(0, totalGet));
 
             updateProgress = function updateProgress(a, z) {
               return progress((0, _tables.progressBar)(a, z));
@@ -89,20 +88,20 @@ var downloadPixivImages = exports.downloadPixivImages = function () {
             console.log('');
 
             // Hand info over to the generic file downloader.
-            _context.next = 18;
-            return (0, _download.downloadAllFiles)(info, info.images, total, subset, name, author, makeDir, authorDir, pixivHeaders, updateProgress, overwrite);
+            _context.next = 17;
+            return (0, _download.downloadAllFiles)(info, info.images, info.imageCount, subset, name, author, makeDir, authorDir, pixivHeaders, updateProgress, overwrite);
 
-          case 18:
+          case 17:
             files = _context.sent;
 
             if (!makeAnimation) {
-              _context.next = 21;
+              _context.next = 20;
               break;
             }
 
             return _context.abrupt('return', (0, _animation.convertToAnimation)(files, info.images, type));
 
-          case 21:
+          case 20:
           case 'end':
             return _context.stop();
         }

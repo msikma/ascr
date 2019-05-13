@@ -32,7 +32,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
  */
 var downloadTwitterImages = exports.downloadTwitterImages = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(tweetsInfo, forceName, forceAuthor, subset, dirMin, authorDir, overwrite) {
-    var totalImages, mainTweet, allFiles, total, name, author, firstURL, baseExt, totalDl, makeDir, baseName, progress, updateProgress;
+    var totalImages, mainTweet, allFiles, totalGet, name, author, firstURL, baseExt, makeDir, baseName, progress, updateProgress;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -46,31 +46,30 @@ var downloadTwitterImages = exports.downloadTwitterImages = function () {
             allFiles = tweetsInfo.reduce(function (acc, tweet) {
               return [].concat(_toConsumableArray(acc), _toConsumableArray(tweet.images));
             }, []);
-            total = totalImages;
+            totalGet = subset.length ? subset.length : totalImages;
             name = forceName || mainTweet.tweet.tweetID;
             author = forceAuthor || mainTweet.author.authorName;
             firstURL = mainTweet.images[0].src[0];
             baseExt = (0, _name.getExtAndBase)(firstURL).ext;
-            totalDl = subset.length > 0 ? subset.length : total;
-            makeDir = dirMin !== 0 && dirMin <= total;
+            makeDir = dirMin !== 0 && dirMin <= totalGet;
 
             // If there are enough images, we store them in a directory. Create that directory now, if needed.
 
-            baseName = (0, _name.imageName)(name, author, makeDir, authorDir, 1, total, baseExt);
+            baseName = (0, _name.imageName)(name, author, makeDir, authorDir, 1, totalGet, baseExt);
 
             if (!baseName.dirs.length) {
-              _context.next = 14;
+              _context.next = 13;
               break;
             }
 
-            _context.next = 14;
+            _context.next = 13;
             return (0, _files.makeDirectory)(baseName.dirs);
 
-          case 14:
+          case 13:
 
             console.log('');
-            console.log('Downloading to ' + _chalk2.default.red(baseName.full) + (total > 1 ? ' (' + (subset.length > 0 ? 'subset: ' : '') + totalDl + ' image' + (totalDl > 1 ? 's' : '') + ')' : '') + '...');
-            progress = console.draft((0, _tables.progressBar)(0, total));
+            console.log('Downloading to ' + _chalk2.default.red(baseName.full) + (totalGet > 1 ? ' (' + (subset.length > 0 ? 'subset: ' : '') + totalGet + ' image' + (totalGet > 1 ? 's' : '') + (subset.length ? ' of ' + info.imageCount : '') + ')' : '') + '...');
+            progress = console.draft((0, _tables.progressBar)(0, totalGet));
 
             updateProgress = function updateProgress(a, z) {
               return progress((0, _tables.progressBar)(a, z));
@@ -79,9 +78,9 @@ var downloadTwitterImages = exports.downloadTwitterImages = function () {
             // Hand info over to the generic file downloader.
 
 
-            return _context.abrupt('return', (0, _download.downloadAllFiles)(tweetsInfo, allFiles, total, subset, name, author, makeDir, authorDir, null, updateProgress, overwrite));
+            return _context.abrupt('return', (0, _download.downloadAllFiles)(tweetsInfo, allFiles, totalImages, subset, name, author, makeDir, authorDir, null, updateProgress, overwrite));
 
-          case 19:
+          case 18:
           case 'end':
             return _context.stop();
         }
