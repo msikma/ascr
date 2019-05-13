@@ -31,16 +31,15 @@ const getSafeName = (info) => {
 }
 
 export const downloadTumblrImages = async (info, forceName, forceAuthor, subset, dirMin, authorDir, overwrite) => {
-  const total = info.imageCount
+  const totalGet = subset.length ? subset.length : info.imageCount
   const name = forceName || getSafeName(info)
   const author = forceAuthor || info.blog.blogSub
   const firstURL = info.images[0].src[0]
   const baseExt = getExtAndBase(firstURL).ext
-  const totalDl = subset.length > 0 ? subset.length : total
-  const makeDir = dirMin !== 0 && dirMin <= total
+  const makeDir = dirMin !== 0 && dirMin <= totalGet
 
   // If there are enough images, we store them in a directory. Create that directory now, if needed.
-  const baseName = imageName(name, author, makeDir, authorDir, 1, total, baseExt)
+  const baseName = imageName(name, author, makeDir, authorDir, 1, totalGet, baseExt)
   if (baseName.dirs.length) {
     await makeDirectory(baseName.dirs)
   }
@@ -49,11 +48,11 @@ export const downloadTumblrImages = async (info, forceName, forceAuthor, subset,
   // TODO: add this
 
   console.log('')
-  console.log(`Downloading to ${chalk.red(baseName.full)}${total > 1 ? ` (${subset.length > 0 ? 'subset: ' : ''}${totalDl} image${totalDl > 1 ? 's' : ''})` : ''}...`)
-  const progress = console.draft((progressBar(0, total)))
+  console.log(`Downloading to ${chalk.red(baseName.full)}${totalGet > 1 ? ` (${subset.length > 0 ? 'subset: ' : ''}${totalGet} image${totalGet > 1 ? 's' : ''}${subset.length ? ` of ${info.imageCount}` : ``})` : ''}...`)
+  const progress = console.draft((progressBar(0, totalGet)))
   const updateProgress = (a, z) => progress(progressBar(a, z))
   console.log('')
 
   // Hand info over to the generic file downloader.
-  return downloadAllFiles(info, info.images, total, subset, name, author, makeDir, authorDir, null, updateProgress, overwrite)
+  return downloadAllFiles(info, info.images, info.imageCount, subset, name, author, makeDir, authorDir, null, updateProgress, overwrite)
 }

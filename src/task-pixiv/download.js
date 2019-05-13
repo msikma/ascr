@@ -30,15 +30,14 @@ const pixivHeaders = (referrer) => ({
 export const downloadPixivImages = async (info, forceName, forceAuthor, subset, dirMin, authorDir, type, overwrite) => {
   // If we're downloading multiple images, just print the name of the first one
   // as an example for how the rest will be named.
-  const total = info.imageCount
+  const totalGet = subset.length ? subset.length : info.imageCount
   const name = forceName || info.title
   const author = forceAuthor || info.author.authorName
   const baseExt = getExtAndBase(info.images[0].src[0]).ext
-  const totalDl = subset.length > 0 ? subset.length : total
-  const makeDir = dirMin !== 0 && dirMin <= total
+  const makeDir = dirMin !== 0 && dirMin <= totalGet
 
   // If there are enough images, we store them in a directory. Create that directory now, if needed.
-  const baseName = imageName(name, author, makeDir, authorDir, 1, total, baseExt)
+  const baseName = imageName(name, author, makeDir, authorDir, 1, totalGet, baseExt)
   if (baseName.dirs.length) {
     await makeDirectory(baseName.dirs)
   }
@@ -46,13 +45,13 @@ export const downloadPixivImages = async (info, forceName, forceAuthor, subset, 
   // In all other cases, we just keep the same extension. Determine which one it is here.
   const makeAnimation = info.isAnimation && baseExt === 'zip' && type !== 'none'
   console.log('')
-  console.log(`Downloading to ${chalk.red(baseName.full)}${total > 1 ? ` (${subset.length > 0 ? 'subset: ' : ''}${totalDl} image${totalDl > 1 ? 's' : ''})` : ''}...`)
-  const progress = console.draft((progressBar(0, total)))
+  console.log(`Downloading to ${chalk.red(baseName.full)}${totalGet > 1 ? ` (${subset.length ? 'subset: ' : ''}${totalGet} image${totalGet > 1 ? 's' : ''}${subset.length ? ` of ${info.imageCount}` : ``})` : ''}...`)
+  const progress = console.draft((progressBar(0, totalGet)))
   const updateProgress = (a, z) => progress(progressBar(a, z))
   console.log('')
 
   // Hand info over to the generic file downloader.
-  const files = await downloadAllFiles(info, info.images, total, subset, name, author, makeDir, authorDir, pixivHeaders, updateProgress, overwrite)
+  const files = await downloadAllFiles(info, info.images, info.imageCount, subset, name, author, makeDir, authorDir, pixivHeaders, updateProgress, overwrite)
 
   // If we're making an animation, hand the files over to the gif/webm generation code.
   if (makeAnimation) {
