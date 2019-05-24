@@ -20,6 +20,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                                                                                                                                                                                                      * Copyright © 2018, Michiel Sikma
                                                                                                                                                                                                      */
 
+/** Removes extra whitespace from text. */
 var cleanText = function cleanText(str) {
   return str.replace(/\t|\n/g, ' ').replace(/ +(?= )/g, '').trim();
 };
@@ -29,6 +30,7 @@ var cleanText = function cleanText(str) {
  */
 var parseEkizoPage = function parseEkizoPage($, url) {
   try {
+    var id = url.match(/index=([0-9]+)$/)[1];
     var $images = $('#itemImageUrlItems img#option');
     var images = $images.get().map(function (i) {
       return $(i).attr('src');
@@ -59,7 +61,8 @@ var parseEkizoPage = function parseEkizoPage($, url) {
     var timeLeft = cleanText($('#timeLeft').text());
 
     return {
-      title: itemName,
+      titlePlain: itemName,
+      title: id + ' ' + itemName,
       desc: desc + '\n' + size,
       condition: condition,
       timeLeft: timeLeft,

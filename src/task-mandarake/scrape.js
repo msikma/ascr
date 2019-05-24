@@ -6,6 +6,7 @@
 import cheerio from 'cheerio'
 import { requestURL } from '../util/request'
 
+/** Removes extra whitespace from text. */
 const cleanText = (str) => {
   return str
     .replace(/\t|\n/g, ' ')
@@ -18,6 +19,7 @@ const cleanText = (str) => {
  */
 const parseEkizoPage = ($, url) => {
   try {
+    const id = url.match(/index=([0-9]+)$/)[1]
     const $images = $('#itemImageUrlItems img#option')
     const images = $images.get().map(i => $(i).attr('src'))
     
@@ -46,7 +48,8 @@ const parseEkizoPage = ($, url) => {
     const timeLeft = cleanText($('#timeLeft').text())
 
     return {
-      title: itemName,
+      titlePlain: itemName,
+      title: `${id} ${itemName}`,
       desc: `${desc}\n${size}`,
       condition,
       timeLeft,
