@@ -53,17 +53,24 @@ var imageName = exports.imageName = function imageName(name, author, makeDir, au
 
   // We'll use the base either for the directory name, or for the filename
   // depending on whether we're putting the files in a directory or not.
-  if (makeDir && authorDir) {
-    var dirs = (0, _files.safePath)([author, name]);
+  if (makeDir && !author) {
+    var dirs = (0, _files.safePath)([name]);
     var fn = file.join('').trim();
     return { dirs: dirs, fn: fn, full: dirs.join('/') + '/' + fn };
+  } else if (!makeDir && !author) {
+    var _fn = [(0, _files.safePath)([name]).join(nameSeparator)].concat(_toConsumableArray(file)).join('').trim();
+    return { dirs: [], fn: _fn, full: _fn };
+  } else if (makeDir && authorDir) {
+    var _dirs = (0, _files.safePath)([author, name]);
+    var _fn2 = file.join('').trim();
+    return { dirs: _dirs, fn: _fn2, full: _dirs.join('/') + '/' + _fn2 };
   } else if (makeDir && !authorDir) {
-    var _dirs = (0, _files.safePath)([[name, author].join(nameSeparator).trim()]);
-    var _fn = file.join('').trim();
-    return { dirs: _dirs, fn: _fn, full: _dirs[0] + '/' + _fn };
+    var _dirs2 = (0, _files.safePath)([[name, author].join(nameSeparator).trim()]);
+    var _fn3 = file.join('').trim();
+    return { dirs: _dirs2, fn: _fn3, full: _dirs2[0] + '/' + _fn3 };
   } else {
-    var _fn2 = [(0, _files.safePath)([name, author]).join(nameSeparator)].concat(_toConsumableArray(file)).join('').trim();
-    return { dirs: [], fn: _fn2, full: _fn2 };
+    var _fn4 = [(0, _files.safePath)([name, author]).join(nameSeparator)].concat(_toConsumableArray(file)).join('').trim();
+    return { dirs: [], fn: _fn4, full: _fn4 };
   }
 };
 

@@ -56,7 +56,7 @@ var downloadAllFiles = exports.downloadAllFiles = function downloadAllFiles(info
       return updateProgress(++counter, total);
     }
     // Otherwise, download as usual.
-    var url = image.src[0];
+    var url = image.src ? image.src[0] : image;
 
     // Some downloads might have a different author for a specific image in the list.
     // E.g. Tumblr posts that have downloadable replies from other people.

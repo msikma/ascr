@@ -7,6 +7,7 @@ import disableLogging from './util/log'
 import { loadCookies } from './util/cookies'
 import { subsetRange } from './util/subset'
 import { downloadPixivURL, isPixivURL } from './task-pixiv'
+import { downloadMandarakeURL, isMandarakeURL } from './task-mandarake'
 import { downloadTwitterURL, isTwitterURL } from './task-twitter'
 import { downloadTumblrURL, isTumblrURL } from './task-tumblr'
 
@@ -43,6 +44,9 @@ export const run = async (args) => {
       }
       else if (isTumblrURL(url)) {
         await downloadTumblrURL(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite, tumblrJSON, tumblrJSONIsDefault)
+      }
+      else if (isMandarakeURL(url)) {
+        await downloadMandarakeURL(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite)
       }
       else {
         console.log(`ascr: error: not a recognized URL scheme: ${url}`)

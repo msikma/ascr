@@ -45,7 +45,16 @@ export const imageName = (name, author, makeDir, authorDir, a = 1, z = 1, ext) =
 
   // We'll use the base either for the directory name, or for the filename
   // depending on whether we're putting the files in a directory or not.
-  if (makeDir && authorDir) {
+  if (makeDir && !author) {
+    const dirs = safePath([name])
+    const fn = file.join('').trim()
+    return { dirs, fn, full: `${dirs.join('/')}/${fn}` }
+  }
+  else if (!makeDir && !author) {
+    const fn = [safePath([name]).join(nameSeparator), ...file].join('').trim()
+    return { dirs: [], fn, full: fn }
+  }
+  else if (makeDir && authorDir) {
     const dirs = safePath([author, name])
     const fn = file.join('').trim()
     return { dirs, fn, full: `${dirs.join('/')}/${fn}` }

@@ -8,9 +8,10 @@ const package = require('../package.json')
 const copyrightNotice = 'Please always respect the artists\' copyright and their wishes regarding the sharing of their work.'
 const longHelp = `This program will visit the URL given and download the image found there.
 Currently supported URL schemes:
-  Pixiv:   e.g. https://www.pixiv.net/member_illust.php?mode=medium&illust_id=12345678
-  Twitter: e.g. https://twitter.com/username/status/12345678910111213
-  Tumblr:  e.g. https://username.tumblr.com/post/12345678910/post-title
+  Pixiv:     e.g. https://www.pixiv.net/member_illust.php?mode=medium&illust_id=12345678
+  Twitter:   e.g. https://twitter.com/username/status/12345678910111213
+  Tumblr:    e.g. https://username.tumblr.com/post/12345678910/post-title
+  Mandarake: e.g. https://ekizo.mandarake.co.jp/auction/item/itemInfoJa.html?index=606577
 
 To download images that are behind a login wall (e.g. posts by protected
 accounts or R-18 images), you need to set up a cookies.txt file containing

@@ -15,6 +15,8 @@ var _subset = require('./util/subset');
 
 var _taskPixiv = require('./task-pixiv');
 
+var _taskMandarake = require('./task-mandarake');
+
 var _taskTwitter = require('./task-twitter');
 
 var _taskTumblr = require('./task-tumblr');
@@ -65,7 +67,7 @@ var run = exports.run = function () {
 
           case 11:
             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-              _context.next = 33;
+              _context.next = 38;
               break;
             }
 
@@ -80,7 +82,7 @@ var run = exports.run = function () {
             return (0, _taskPixiv.downloadPixivURL)(url, name, author, subset, dirMin, authorDir, rawData, onlyData, type, quiet, overwrite);
 
           case 16:
-            _context.next = 30;
+            _context.next = 35;
             break;
 
           case 18:
@@ -93,7 +95,7 @@ var run = exports.run = function () {
             return (0, _taskTwitter.downloadTwitterURL)(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, noThread, overwrite);
 
           case 21:
-            _context.next = 30;
+            _context.next = 35;
             break;
 
           case 23:
@@ -106,58 +108,71 @@ var run = exports.run = function () {
             return (0, _taskTumblr.downloadTumblrURL)(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite, tumblrJSON, tumblrJSONIsDefault);
 
           case 26:
-            _context.next = 30;
+            _context.next = 35;
             break;
 
           case 28:
+            if (!(0, _taskMandarake.isMandarakeURL)(url)) {
+              _context.next = 33;
+              break;
+            }
+
+            _context.next = 31;
+            return (0, _taskMandarake.downloadMandarakeURL)(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite);
+
+          case 31:
+            _context.next = 35;
+            break;
+
+          case 33:
             console.log('ascr: error: not a recognized URL scheme: ' + url);
             process.exit(1);
 
-          case 30:
+          case 35:
             _iteratorNormalCompletion = true;
             _context.next = 11;
             break;
 
-          case 33:
-            _context.next = 39;
+          case 38:
+            _context.next = 44;
             break;
 
-          case 35:
-            _context.prev = 35;
+          case 40:
+            _context.prev = 40;
             _context.t0 = _context['catch'](9);
             _didIteratorError = true;
             _iteratorError = _context.t0;
 
-          case 39:
-            _context.prev = 39;
-            _context.prev = 40;
+          case 44:
+            _context.prev = 44;
+            _context.prev = 45;
 
             if (!_iteratorNormalCompletion && _iterator.return) {
               _iterator.return();
             }
 
-          case 42:
-            _context.prev = 42;
+          case 47:
+            _context.prev = 47;
 
             if (!_didIteratorError) {
-              _context.next = 45;
+              _context.next = 50;
               break;
             }
 
             throw _iteratorError;
 
-          case 45:
-            return _context.finish(42);
+          case 50:
+            return _context.finish(47);
 
-          case 46:
-            return _context.finish(39);
+          case 51:
+            return _context.finish(44);
 
-          case 47:
-            _context.next = 53;
+          case 52:
+            _context.next = 58;
             break;
 
-          case 49:
-            _context.prev = 49;
+          case 54:
+            _context.prev = 54;
             _context.t1 = _context['catch'](5);
 
             if (_context.t1.statusCode === 404) {
@@ -169,15 +184,15 @@ var run = exports.run = function () {
             }
             process.exit(1);
 
-          case 53:
+          case 58:
             return _context.abrupt('return', process.exit(0));
 
-          case 54:
+          case 59:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, undefined, [[5, 49], [9, 35, 39, 47], [40,, 42, 46]]);
+    }, _callee, undefined, [[5, 54], [9, 40, 44, 52], [45,, 47, 51]]);
   }));
 
   return function run(_x) {
