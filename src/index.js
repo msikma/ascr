@@ -10,6 +10,7 @@ import { downloadPixivURL, isPixivURL } from './task-pixiv'
 import { downloadMandarakeURL, isMandarakeURL } from './task-mandarake'
 import { downloadTwitterURL, isTwitterURL } from './task-twitter'
 import { downloadTumblrURL, isTumblrURL } from './task-tumblr'
+import { downloadUnknownURL } from './task-unknown'
 
 /**
  * This is run right after parsing the user's command line arguments.
@@ -49,6 +50,8 @@ export const run = async (args) => {
         await downloadMandarakeURL(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite)
       }
       else {
+        const success = await downloadUnknownURL(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, overwrite)
+        if (success) process.exit(0)
         console.log(`ascr: error: not a recognized URL scheme: ${url}`)
         process.exit(1)
       }

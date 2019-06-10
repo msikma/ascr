@@ -27,7 +27,7 @@ export const downloadAllFiles = (info, files, total, subset, name, author, makeD
   let downloaded = 0
   let counter = 0
   const totalDl = subset.length > 0 ? subset.length : total
-  
+
   return Promise.all(files.map((image, n) => {
     // Exit immediately if we're downloading a subset of images, and this one isn't in it.
     if (subset.length && subset.indexOf(n + 1) === -1) {

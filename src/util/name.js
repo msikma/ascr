@@ -10,6 +10,20 @@ import { safePath } from './files'
 const nameSeparator = ' - '
 const azSeparator = '-'
 
+/** Returns a site domain name. */
+export const getURLDomain = url => {
+  const matches = url.match('\/\/(.+?)\/')
+  if (matches && matches[1]) return matches[1]
+  return null
+}
+
+/** Returns the page/directory name of a URL. */
+export const getURLPage = url => {
+  const lastSegment = url.split('/').pop()
+  const page = lastSegment.match('[^.]+', 'i')
+  if (page && page[0]) return page[0]
+}
+
 /**
  * When downloading multiple images from Pixiv, the largest size image might be
  * a JPG or it might be a PNG. The cheapest strategy is to try and download

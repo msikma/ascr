@@ -53,7 +53,7 @@ export const progressBar = (a, z) => {
  * It can only have at most four columns.
  */
 export const topTable = (kvData, warning) => {
-  const table = new Table({ colWidths: [18, 18, 18, 18] })
+  const table = new Table({ colWidths: Object.keys(kvData).length === 2 ? [18, 56] : [18, 18, 18, 18] })
   table.push(Object.keys(kvData).map(cell => chalk.blue(cell)))
   table.push(Object.values(kvData))
   if (warning) {

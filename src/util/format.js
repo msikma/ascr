@@ -22,8 +22,8 @@ export const formatDate = (date) => (
  * Shortens a string to a certain number of characters.
  * Also add [...] at the end of a shortened string.
  */
-export const shortenString = (str, amount) => (
-  str && str.length > amount ? `${str.substr(0, amount - 6)} [...]` : str
+export const shortenString = (str, amount, realEllipsis = false) => (
+  str && str.length > amount ? `${str.substr(0, amount - (realEllipsis ? 2 : 6))} ${realEllipsis ? '…' : '[...]'}` : str
 )
 
 /**
