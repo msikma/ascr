@@ -54,7 +54,7 @@ var copyFile = exports.copyFile = function copyFile(src, dest) {
  */
 /**
  * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
- * Copyright © 2018, Michiel Sikma
+ * Copyright © 2019, Michiel Sikma
  */
 
 var safePath = exports.safePath = function safePath(dirsArray) {

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.downloadTumblrImages = undefined;
+exports.downloadGenericImages = undefined;
 
 var _chalk = require('chalk');
 
@@ -24,36 +24,18 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * Copyright © 2019, Michiel Sikma
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
 
-var matchDashes = new RegExp('-', 'g');
-
-/**
- * Attempt to safely get a filename. This is completely arbitrary,
- * but Tumblr doesn't make people enter a proper title for their works.
- * We try to see if the summary matches the slug, and use that if so.
- * Otherwise, we use the slug with its dashes turned into spaces.
- */
-var getSafeName = function getSafeName(info) {
-  var spacedSlug = info.slug.replace(matchDashes, ' ');
-  var firstSentenceSummary = info.summary.split('. ')[0];
-
-  if (spacedSlug === firstSentenceSummary.toLowerCase()) {
-    return firstSentenceSummary.trim();
-  } else {
-    return spacedSlug.trim();
-  }
-};
-
-var downloadTumblrImages = exports.downloadTumblrImages = function () {
+var downloadGenericImages = exports.downloadGenericImages = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(info, forceName, forceAuthor, subset, dirMin, authorDir, overwrite) {
-    var totalGet, name, author, firstURL, baseExt, makeDir, baseName, progress, updateProgress;
+    var images, totalGet, name, author, firstURL, baseExt, makeDir, baseName, progress, updateProgress;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            totalGet = subset.length ? subset.length : info.imageCount;
-            name = forceName || getSafeName(info);
-            author = forceAuthor || info.blog.blogSub;
-            firstURL = info.images[0].src[0];
+            images = info.images;
+            totalGet = subset.length ? subset.length : images.length;
+            name = forceName || info.title ? info.title + ' (' + info.page + ')' : info.page;
+            author = forceAuthor || info.domain;
+            firstURL = images[0].src[0];
             baseExt = (0, _name.getExtAndBase)(firstURL).ext;
             makeDir = dirMin !== 0 && dirMin <= totalGet;
 
@@ -62,17 +44,14 @@ var downloadTumblrImages = exports.downloadTumblrImages = function () {
             baseName = (0, _name.imageName)(name, author, makeDir, authorDir, 1, totalGet, baseExt);
 
             if (!baseName.dirs.length) {
-              _context.next = 10;
+              _context.next = 11;
               break;
             }
 
-            _context.next = 10;
+            _context.next = 11;
             return (0, _files.makeDirectory)(baseName.dirs);
 
-          case 10:
-
-            // Some posts have downloadable content by multiple people.
-            // TODO: add this
+          case 11:
 
             console.log('');
             console.log('Downloading to ' + _chalk2.default.red(baseName.full) + (totalGet > 1 ? ' (' + (subset.length > 0 ? 'subset: ' : '') + totalGet + ' image' + (totalGet > 1 ? 's' : '') + (subset.length ? ' of ' + info.imageCount : '') + ')' : '') + '...');
@@ -82,10 +61,10 @@ var downloadTumblrImages = exports.downloadTumblrImages = function () {
               return progress((0, _tables.progressBar)(a, z));
             };
 
-            console.log('');
-
             // Hand info over to the generic file downloader.
-            return _context.abrupt('return', (0, _download.downloadAllFiles)(info, info.images, info.imageCount, subset, name, author, makeDir, authorDir, null, updateProgress, overwrite));
+
+
+            return _context.abrupt('return', (0, _download.downloadAllFiles)(null, images, totalGet, subset, name, author, makeDir, authorDir, null, updateProgress, overwrite));
 
           case 16:
           case 'end':
@@ -95,7 +74,7 @@ var downloadTumblrImages = exports.downloadTumblrImages = function () {
     }, _callee, undefined);
   }));
 
-  return function downloadTumblrImages(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
+  return function downloadGenericImages(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
     return _ref.apply(this, arguments);
   };
 }();

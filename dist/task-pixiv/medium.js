@@ -27,7 +27,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
                                                                                                                                                                                                                    * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
-                                                                                                                                                                                                                   * Copyright © 2018, Michiel Sikma
+                                                                                                                                                                                                                   * Copyright © 2019, Michiel Sikma
                                                                                                                                                                                                                    */
 
 /**

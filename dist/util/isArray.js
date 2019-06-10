@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 /**
  * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
- * Copyright © 2018, Michiel Sikma
+ * Copyright © 2019, Michiel Sikma
  */
 
 /**

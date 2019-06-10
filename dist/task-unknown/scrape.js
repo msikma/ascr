@@ -3,19 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.downloadMandarakeImages = undefined;
+exports.fetchGenericURL = undefined;
 
-var _chalk = require('chalk');
+var _cheerio = require('cheerio');
 
-var _chalk2 = _interopRequireDefault(_chalk);
-
-var _tables = require('../util/tables');
-
-var _files = require('../util/files');
-
-var _download = require('../util/download');
+var _cheerio2 = _interopRequireDefault(_cheerio);
 
 var _name = require('../util/name');
+
+var _request = require('../util/request');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24,47 +20,61 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * Copyright © 2019, Michiel Sikma
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
 
-var downloadMandarakeImages = exports.downloadMandarakeImages = function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(info, forceName, forceAuthor, subset, dirMin, overwrite) {
-    var totalGet, name, baseExt, makeDir, baseName, progress, updateProgress;
+// Parses a page which may or may not have images.
+var parsePage = function parsePage($, baseURL, url) {
+  var $a = $('a');
+  var imgLinks = $a.get().map(function (a) {
+    return $(a).attr('href');
+  }).filter(function (url) {
+    return (/\.(jpg|jpeg|png|gif|bmp)$/.test(url)
+    );
+  });
+  var imgAbs = imgLinks.map(function (url) {
+    if (url.startsWith('/') || /^https?:\/\//.test(url) || url.startsWith('ftp://')) {
+      return url;
+    } else {
+      return baseURL + '/' + url;
+    }
+  });
+  var title = $('head title').text().trim();
+  var lang = $('html').attr('lang') || 'n/a';
+  var domain = (0, _name.getURLDomain)(url);
+  var page = (0, _name.getURLPage)(url);
+
+  return {
+    title: title,
+    lang: lang,
+    baseURL: baseURL,
+    url: url,
+    page: page,
+    domain: domain,
+    images: imgAbs.map(function (url) {
+      return { src: [url, null] };
+    }),
+    imageCount: imgAbs.length
+  };
+};
+
+var fetchGenericURL = exports.fetchGenericURL = function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url) {
+    var baseURL, html, $postHTML;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            // If we're downloading multiple images, just print the name of the first one
-            // as an example for how the rest will be named.
-            totalGet = subset.length ? subset.length : info.imageCount;
-            name = forceName || info.title;
-            baseExt = (0, _name.getExtAndBase)(info.images[0]).ext;
-            makeDir = dirMin !== 0 && dirMin <= totalGet;
+            baseURL = url.split('/').slice(0, -1).join('/');
+            _context.next = 3;
+            return (0, _request.requestURL)(url);
 
-            // If there are enough images, we store them in a directory. Create that directory now, if needed.
+          case 3:
+            html = _context.sent;
 
-            baseName = (0, _name.imageName)(name, null, makeDir, false, 1, totalGet, baseExt);
 
-            if (!baseName.dirs.length) {
-              _context.next = 8;
-              break;
-            }
+            // Parse the HTML (if it's there) and pass it on along with any errors.
+            $postHTML = _cheerio2.default.load(html);
+            return _context.abrupt('return', parsePage($postHTML, baseURL, url));
 
-            _context.next = 8;
-            return (0, _files.makeDirectory)(baseName.dirs);
-
-          case 8:
-            console.log('');
-            console.log('Downloading to ' + _chalk2.default.red(baseName.full) + (totalGet > 1 ? ' (' + (subset.length ? 'subset: ' : '') + totalGet + ' image' + (totalGet > 1 ? 's' : '') + (subset.length ? ' of ' + info.imageCount : '') + ')' : '') + '...');
-            progress = console.draft((0, _tables.progressBar)(0, totalGet));
-
-            updateProgress = function updateProgress(a, z) {
-              return progress((0, _tables.progressBar)(a, z));
-            };
-
-            console.log('');
-
-            // Hand info over to the generic file downloader.
-            return _context.abrupt('return', (0, _download.downloadAllFiles)(info, info.images, info.imageCount, subset, name, null, makeDir, false, null, updateProgress, overwrite));
-
-          case 14:
+          case 6:
           case 'end':
             return _context.stop();
         }
@@ -72,7 +82,7 @@ var downloadMandarakeImages = exports.downloadMandarakeImages = function () {
     }, _callee, undefined);
   }));
 
-  return function downloadMandarakeImages(_x, _x2, _x3, _x4, _x5, _x6) {
+  return function fetchGenericURL(_x) {
     return _ref.apply(this, arguments);
   };
 }();

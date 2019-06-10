@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.avoidDuplicates = exports.getExtAndBase = exports.imageName = exports.swapExt = undefined;
+exports.avoidDuplicates = exports.getExtAndBase = exports.imageName = exports.swapExt = exports.getURLPage = exports.getURLDomain = undefined;
 
 var _fs = require('fs');
 
@@ -15,11 +15,25 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } /**
                                                                                                                                                                                                      * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
-                                                                                                                                                                                                     * Copyright © 2018, Michiel Sikma
+                                                                                                                                                                                                     * Copyright © 2019, Michiel Sikma
                                                                                                                                                                                                      */
 
 var nameSeparator = ' - ';
 var azSeparator = '-';
+
+/** Returns a site domain name. */
+var getURLDomain = exports.getURLDomain = function getURLDomain(url) {
+  var matches = url.match('\/\/(.+?)\/');
+  if (matches && matches[1]) return matches[1];
+  return null;
+};
+
+/** Returns the page/directory name of a URL. */
+var getURLPage = exports.getURLPage = function getURLPage(url) {
+  var lastSegment = url.split('/').pop();
+  var page = lastSegment.match('[^.]+', 'i');
+  if (page && page[0]) return page[0];
+};
 
 /**
  * When downloading multiple images from Pixiv, the largest size image might be

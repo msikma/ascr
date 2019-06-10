@@ -34,7 +34,7 @@ var leadingSpaceRe = new RegExp('(^[ ]+)', 'g');
  */
 /**
  * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
- * Copyright © 2018, Michiel Sikma
+ * Copyright © 2019, Michiel Sikma
  */
 
 var formatDate = exports.formatDate = function formatDate(date) {
@@ -46,7 +46,8 @@ var formatDate = exports.formatDate = function formatDate(date) {
  * Also add [...] at the end of a shortened string.
  */
 var shortenString = exports.shortenString = function shortenString(str, amount) {
-  return str && str.length > amount ? str.substr(0, amount - 6) + ' [...]' : str;
+  var realEllipsis = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  return str && str.length > amount ? str.substr(0, amount - (realEllipsis ? 2 : 6)) + ' ' + (realEllipsis ? '…' : '[...]') : str;
 };
 
 /**

@@ -17,7 +17,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } /**
                                                                                                                                                                                                      * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
-                                                                                                                                                                                                     * Copyright © 2018, Michiel Sikma
+                                                                                                                                                                                                     * Copyright © 2019, Michiel Sikma
                                                                                                                                                                                                      */
 
 /** Removes extra whitespace from text. */

@@ -29,5 +29,5 @@ var findScriptData = exports.findScriptData = function findScriptData(scriptCont
   }
 }; /**
     * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
-    * Copyright © 2018, Michiel Sikma
+    * Copyright © 2019, Michiel Sikma
     */

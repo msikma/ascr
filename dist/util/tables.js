@@ -21,7 +21,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } /**
                                                                                                                                                                                                      * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
-                                                                                                                                                                                                     * Copyright © 2018, Michiel Sikma
+                                                                                                                                                                                                     * Copyright © 2019, Michiel Sikma
                                                                                                                                                                                                      */
 
 // Width of the rightmost column in characters.
@@ -66,7 +66,7 @@ var progressBar = exports.progressBar = function progressBar(a, z) {
  * It can only have at most four columns.
  */
 var topTable = exports.topTable = function topTable(kvData, warning) {
-  var table = new _cliTable2.default({ colWidths: [18, 18, 18, 18] });
+  var table = new _cliTable2.default({ colWidths: Object.keys(kvData).length === 2 ? [18, 56] : [18, 18, 18, 18] });
   table.push(Object.keys(kvData).map(function (cell) {
     return _chalk2.default.blue(cell);
   }));

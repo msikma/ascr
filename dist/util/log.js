@@ -13,7 +13,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // Monkey patch the console object with draftlog.
 _draftlog2.default.into(console); /**
                                    * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
-                                   * Copyright © 2018, Michiel Sikma
+                                   * Copyright © 2019, Michiel Sikma
                                    */
 
 var disableLogging = function disableLogging() {

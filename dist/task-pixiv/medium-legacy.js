@@ -101,5 +101,5 @@ var parsePixivMediumUntilMay2018 = exports.parsePixivMediumUntilMay2018 = functi
   };
 }; /**
     * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
-    * Copyright © 2018, Michiel Sikma
+    * Copyright © 2019, Michiel Sikma
     */

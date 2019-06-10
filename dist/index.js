@@ -21,11 +21,13 @@ var _taskTwitter = require('./task-twitter');
 
 var _taskTumblr = require('./task-tumblr');
 
+var _taskUnknown = require('./task-unknown');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * Copyright © 2018, Michiel Sikma
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * Copyright © 2019, Michiel Sikma
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
 
 /**
@@ -37,7 +39,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
  */
 var run = exports.run = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(args) {
-    var urls, name, author, cookies, cookiesIsDefault, tumblrJSON, tumblrJSONIsDefault, dirMin, rawData, onlyData, type, inline, quiet, authorDir, noThread, overwrite, subset, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, url;
+    var urls, name, author, cookies, cookiesIsDefault, tumblrJSON, tumblrJSONIsDefault, dirMin, rawData, onlyData, type, inline, quiet, authorDir, noThread, overwrite, subset, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, url, success;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -67,7 +69,7 @@ var run = exports.run = function () {
 
           case 11:
             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-              _context.next = 38;
+              _context.next = 42;
               break;
             }
 
@@ -82,7 +84,7 @@ var run = exports.run = function () {
             return (0, _taskPixiv.downloadPixivURL)(url, name, author, subset, dirMin, authorDir, rawData, onlyData, type, quiet, overwrite);
 
           case 16:
-            _context.next = 35;
+            _context.next = 39;
             break;
 
           case 18:
@@ -95,7 +97,7 @@ var run = exports.run = function () {
             return (0, _taskTwitter.downloadTwitterURL)(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, noThread, overwrite);
 
           case 21:
-            _context.next = 35;
+            _context.next = 39;
             break;
 
           case 23:
@@ -108,7 +110,7 @@ var run = exports.run = function () {
             return (0, _taskTumblr.downloadTumblrURL)(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite, tumblrJSON, tumblrJSONIsDefault);
 
           case 26:
-            _context.next = 35;
+            _context.next = 39;
             break;
 
           case 28:
@@ -121,58 +123,65 @@ var run = exports.run = function () {
             return (0, _taskMandarake.downloadMandarakeURL)(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, inline, overwrite);
 
           case 31:
-            _context.next = 35;
+            _context.next = 39;
             break;
 
           case 33:
+            _context.next = 35;
+            return (0, _taskUnknown.downloadUnknownURL)(url, name, author, subset, dirMin, authorDir, rawData, onlyData, quiet, overwrite);
+
+          case 35:
+            success = _context.sent;
+
+            if (success) process.exit(0);
             console.log('ascr: error: not a recognized URL scheme: ' + url);
             process.exit(1);
 
-          case 35:
+          case 39:
             _iteratorNormalCompletion = true;
             _context.next = 11;
             break;
 
-          case 38:
-            _context.next = 44;
+          case 42:
+            _context.next = 48;
             break;
 
-          case 40:
-            _context.prev = 40;
+          case 44:
+            _context.prev = 44;
             _context.t0 = _context['catch'](9);
             _didIteratorError = true;
             _iteratorError = _context.t0;
 
-          case 44:
-            _context.prev = 44;
-            _context.prev = 45;
+          case 48:
+            _context.prev = 48;
+            _context.prev = 49;
 
             if (!_iteratorNormalCompletion && _iterator.return) {
               _iterator.return();
             }
 
-          case 47:
-            _context.prev = 47;
+          case 51:
+            _context.prev = 51;
 
             if (!_didIteratorError) {
-              _context.next = 50;
+              _context.next = 54;
               break;
             }
 
             throw _iteratorError;
 
-          case 50:
-            return _context.finish(47);
+          case 54:
+            return _context.finish(51);
 
-          case 51:
-            return _context.finish(44);
+          case 55:
+            return _context.finish(48);
 
-          case 52:
-            _context.next = 58;
+          case 56:
+            _context.next = 62;
             break;
 
-          case 54:
-            _context.prev = 54;
+          case 58:
+            _context.prev = 58;
             _context.t1 = _context['catch'](5);
 
             if (_context.t1.statusCode === 404) {
@@ -184,15 +193,15 @@ var run = exports.run = function () {
             }
             process.exit(1);
 
-          case 58:
+          case 62:
             return _context.abrupt('return', process.exit(0));
 
-          case 59:
+          case 63:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, undefined, [[5, 54], [9, 40, 44, 52], [45,, 47, 51]]);
+    }, _callee, undefined, [[5, 58], [9, 44, 48, 56], [49,, 51, 55]]);
   }));
 
   return function run(_x) {
