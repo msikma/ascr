@@ -1,6 +1,6 @@
 /**
  * ascr - Art Scraper <https://bitbucket.org/msikma/ascr>
- * Copyright © 2018, Michiel Sikma
+ * Copyright © 2019, Michiel Sikma
  */
 
 import FileCookieStore from 'tough-cookie-file-store-sync'
