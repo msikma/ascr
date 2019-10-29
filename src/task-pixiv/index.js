@@ -8,7 +8,7 @@ import { printPixivInfo } from './print'
 import { downloadPixivImages } from './download'
 
 // Single work URL.
-const illustCheck = new RegExp('member_illust.+?illust_id=[0-9]+')
+const illustCheck = new RegExp('artworks/[0-9]+|member_illust.+?illust_id=[0-9]+')
 
 /**
  * Checks whether a URL is for a single work.

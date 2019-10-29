@@ -16,7 +16,11 @@ import { htmlToTerm } from '../util/format'
  * Returns the illustration ID for a URL.
  */
 const pixivIllustID = (url) => {
-  const matches = url.match(/illust_id=([0-9]+)/)
+  let matches = url.match(/illust_id=([0-9]+)/)
+  if (matches == null) {
+    // For URLs that are like 'https://www.pixiv.net/artworks/[0-9]+'
+    matches = url.match(/artworks\/([0-9]+)$/)
+  }
   return matches && parseInt(matches[1], 10)
 }
 

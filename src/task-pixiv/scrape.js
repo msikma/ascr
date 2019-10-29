@@ -16,6 +16,7 @@ import { requestURL } from '../util/request'
  * Switch a URL between different view modes (e.g. 'manga', 'medium').
  */
 export const pixivURLMode = (url, type = 'medium') => {
+  if (~url.indexOf('artworks/')) return url
   return url.replace(/(member_illust\.php\?mode=)(.+?)(&)/, `$1${type}$3`)
 }
 
@@ -245,7 +246,7 @@ const fetchPixivAuthor = async (authorURL) => {
  * but for now 'useJSONRequest' is true by default, which loads the JSON request.
  */
 export const fetchPixivSingle = async (rawURL, includeAuthorInfo = true, useJSONRequest = true) => {
-  // Ensure we're loading the ?mode=medium page.
+  // Ensure we're loading the ?mode=medium page, if this is an old style URL.
   const url = pixivURLMode(rawURL, 'medium')
   const html = await requestURL(url)
   const $mediumHTML = cheerio.load(html)
