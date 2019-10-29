@@ -40,6 +40,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 var pixivURLMode = exports.pixivURLMode = function pixivURLMode(url) {
   var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'medium';
 
+  if (~url.indexOf('artworks/')) return url;
   return url.replace(/(member_illust\.php\?mode=)(.+?)(&)/, '$1' + type + '$3');
 };
 
@@ -352,7 +353,7 @@ var fetchPixivSingle = exports.fetchPixivSingle = function () {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            // Ensure we're loading the ?mode=medium page.
+            // Ensure we're loading the ?mode=medium page, if this is an old style URL.
             url = pixivURLMode(rawURL, 'medium');
             _context4.next = 3;
             return (0, _request.requestURL)(url);

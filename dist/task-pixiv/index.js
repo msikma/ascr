@@ -17,7 +17,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
 
 // Single work URL.
-var illustCheck = new RegExp('member_illust.+?illust_id=[0-9]+');
+var illustCheck = new RegExp('artworks/[0-9]+|member_illust.+?illust_id=[0-9]+');
 
 /**
  * Checks whether a URL is for a single work.

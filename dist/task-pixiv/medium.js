@@ -35,6 +35,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  */
 var pixivIllustID = function pixivIllustID(url) {
   var matches = url.match(/illust_id=([0-9]+)/);
+  if (matches == null) {
+    // For URLs that are like 'https://www.pixiv.net/artworks/[0-9]+'
+    matches = url.match(/artworks\/([0-9]+)$/);
+  }
   return matches && parseInt(matches[1], 10);
 };
 
