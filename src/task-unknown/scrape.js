@@ -10,7 +10,12 @@ import { requestURL } from '../util/request'
 // Parses a page which may or may not have images.
 const parsePage = ($, baseURL, url) => {
   const $a = $('a')
-  const imgLinks = $a.get().map(a => $(a).attr('href')).filter(url => /\.(jpg|jpeg|png|gif|bmp)$/.test(url))
+  const imgLinks = $a.get().map(a => {
+    const href = $(a).attr('href')
+    if (!href) return ''
+    const clean = href.split('?')[0]
+    return clean.trim()
+  }).filter(url => /\.(jpg|jpeg|png|gif|bmp)$/.test(url)).filter(url => !!url)
   const imgAbs = imgLinks.map(url => {
     if (url.startsWith('/') || /^https?:\/\//.test(url) || url.startsWith('ftp://')) {
       return url

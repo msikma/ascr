@@ -70,6 +70,32 @@ const scrapePixivAnimation = ($, url) => {
 }
 
 /**
+ * Retrieves the preload data from the page. This contains illustration/user info.
+ */
+const getPreloadData = ($, illustID) => {
+  let illustData = {}
+  let userData = {}
+  let preloadData
+
+  // Attempt to use a <script> with 'globalInitData'.
+  const bootstrapJS = $('script').get().map(s => $(s).html()).filter(s => s.indexOf('globalInitData') > -1)
+  const bootstrapData = findScriptData(bootstrapJS).sandbox.globalInitData
+  if (bootstrapData) {
+    preloadData = bootstrapData.preload
+  }
+  else {
+    // Failing that, look for the <meta> tag.
+    const dataMetaTag$ = $('meta#meta-preload-data')
+    const dataMeta = dataMetaTag$.attr('content')
+    preloadData = JSON.parse(dataMeta)
+  }
+  illustData = preloadData.illust[illustID]
+  userData = preloadData.user[illustData.userId]
+
+  return { illustData, userData }
+}
+
+/**
  * Takes apart a Pixiv ?mode=medium page and extracts information.
  * Call with a Cheerio object, not a string of HTML data.
  *
@@ -95,11 +121,8 @@ export const parsePixivMedium = ($, url) => {
   // The new (post late May 2018) page has a convenient JS object full of all the information we need.
   // There's no actual HTML on the server side.
   const illustID = pixivIllustID(url)
-  const bootstrapJS = $('script').get().map(s => $(s).html()).filter(s => s.indexOf('globalInitData') > -1)
-  const bootstrapData = findScriptData(bootstrapJS).sandbox.globalInitData
-  const illustData = bootstrapData.preload.illust[illustID]
-  const userData = bootstrapData.preload.user[illustData.userId]
-  
+  const { illustData, userData } = getPreloadData($, illustID)
+
   // Now we just pick the data right out of the bootstrap object.
   const title = illustData.illustTitle
   const desc = htmlToTerm(illustData.illustComment, true)
