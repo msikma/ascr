@@ -93,6 +93,35 @@ var scrapePixivAnimation = function scrapePixivAnimation($, url) {
 };
 
 /**
+ * Retrieves the preload data from the page. This contains illustration/user info.
+ */
+var getPreloadData = function getPreloadData($, illustID) {
+  var illustData = {};
+  var userData = {};
+  var preloadData = void 0;
+
+  // Attempt to use a <script> with 'globalInitData'.
+  var bootstrapJS = $('script').get().map(function (s) {
+    return $(s).html();
+  }).filter(function (s) {
+    return s.indexOf('globalInitData') > -1;
+  });
+  var bootstrapData = (0, _script.findScriptData)(bootstrapJS).sandbox.globalInitData;
+  if (bootstrapData) {
+    preloadData = bootstrapData.preload;
+  } else {
+    // Failing that, look for the <meta> tag.
+    var dataMetaTag$ = $('meta#meta-preload-data');
+    var dataMeta = dataMetaTag$.attr('content');
+    preloadData = JSON.parse(dataMeta);
+  }
+  illustData = preloadData.illust[illustID];
+  userData = preloadData.user[illustData.userId];
+
+  return { illustData: illustData, userData: userData };
+};
+
+/**
  * Takes apart a Pixiv ?mode=medium page and extracts information.
  * Call with a Cheerio object, not a string of HTML data.
  *
@@ -120,16 +149,14 @@ var parsePixivMedium = exports.parsePixivMedium = function parsePixivMedium($, u
     // The new (post late May 2018) page has a convenient JS object full of all the information we need.
     // There's no actual HTML on the server side.
   };var illustID = pixivIllustID(url);
-  var bootstrapJS = $('script').get().map(function (s) {
-    return $(s).html();
-  }).filter(function (s) {
-    return s.indexOf('globalInitData') > -1;
-  });
-  var bootstrapData = (0, _script.findScriptData)(bootstrapJS).sandbox.globalInitData;
-  var illustData = bootstrapData.preload.illust[illustID];
-  var userData = bootstrapData.preload.user[illustData.userId];
+
+  var _getPreloadData = getPreloadData($, illustID),
+      illustData = _getPreloadData.illustData,
+      userData = _getPreloadData.userData;
 
   // Now we just pick the data right out of the bootstrap object.
+
+
   var title = illustData.illustTitle;
   var desc = (0, _format.htmlToTerm)(illustData.illustComment, true);
   var dateCreation = illustData.createDate;

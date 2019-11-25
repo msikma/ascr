@@ -24,10 +24,15 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 var parsePage = function parsePage($, baseURL, url) {
   var $a = $('a');
   var imgLinks = $a.get().map(function (a) {
-    return $(a).attr('href');
+    var href = $(a).attr('href');
+    if (!href) return '';
+    var clean = href.split('?')[0];
+    return clean.trim();
   }).filter(function (url) {
     return (/\.(jpg|jpeg|png|gif|bmp)$/.test(url)
     );
+  }).filter(function (url) {
+    return !!url;
   });
   var imgAbs = imgLinks.map(function (url) {
     if (url.startsWith('/') || /^https?:\/\//.test(url) || url.startsWith('ftp://')) {
