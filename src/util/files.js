@@ -4,7 +4,7 @@
  */
 
 import fs from 'fs'
-import unzip from 'unzip'
+import unzip from 'unzipper'
 import mkdirp from 'mkdirp'
 import sanitize from 'sanitize-filename'
 

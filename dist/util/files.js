@@ -18,9 +18,9 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _unzip = require('unzip');
+var _unzipper = require('unzipper');
 
-var _unzip2 = _interopRequireDefault(_unzip);
+var _unzipper2 = _interopRequireDefault(_unzipper);
 
 var _mkdirp = require('mkdirp');
 
@@ -105,7 +105,7 @@ var readFile = exports.readFile = function readFile(path) {
  */
 var unzipFile = exports.unzipFile = function unzipFile(src, dest) {
   return new Promise(function (resolve) {
-    _fs2.default.createReadStream(src).pipe(_unzip2.default.Extract({ path: dest })).on('close', function () {
+    _fs2.default.createReadStream(src).pipe(_unzipper2.default.Extract({ path: dest })).on('close', function () {
       resolve();
     });
   });

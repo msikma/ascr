@@ -1,7 +1,7 @@
 {
   "name": "ascr",
   "description": "Art Scraper - downloads artwork from websites for personal archiving.",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "homepage": "https://github.com/msikma/ascr",
   "main": "dist/index.js",
   "scripts": {
@@ -12,12 +12,12 @@
   "author": "Michiel Sikma <michiel@sikma.org>",
   "license": "MIT",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-plugin-transform-class-properties": "^6.1.0",
     "babel-plugin-transform-object-rest-spread": "^6.1.0",
     "babel-preset-env": "^1.6.0",
     "babel-register": "^6.1.0",
-    "babel-cli": "^6.26.0",
     "eslint": "^4.4.1",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.2.0",
@@ -31,7 +31,6 @@
     "cheerio": "^1.0.0-rc.2",
     "cli-table2": "git://github.com/msikma/cli-table2#2b8f27a",
     "draftlog": "^1.0.12",
-    "tough-cookie-file-store-sync": "^0.3.0",
     "filesize": "^3.6.0",
     "he": "^1.1.1",
     "lodash": "^4.17.10",
@@ -43,8 +42,9 @@
     "sanitize-filename": "^1.6.1",
     "strip-ansi": "^4.0.0",
     "tmp": "^0.0.33",
+    "tough-cookie-file-store-sync": "^0.3.0",
     "tumblr.js": "^1.1.1",
-    "unzip": "^0.1.11",
+    "unzipper": "^0.10.5",
     "url-parse": "^1.4.4",
     "wrap-ansi": "^3.0.1"
   }
