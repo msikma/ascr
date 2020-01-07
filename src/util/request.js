@@ -89,7 +89,7 @@ const saveBinaryFile = (data, dest) => (
 // The request() function returns a promise, so remember to await.
 export const requestURL = (url, fullResponse = false, headers = {}, etc = {}, useCookieJar = cookieJar.jar) => new Promise((resolve, reject) => (
   request(
-    { url, headers: { ...browserHeaders, ...(headers != null ? headers : {}) }, ...requestDefaults, ...etc, ...(useCookieJar ? { jar: useCookieJar } : {}) },
+    { url: encodeURI(url), headers: { ...browserHeaders, ...(headers != null ? headers : {}) }, ...requestDefaults, ...etc, ...(useCookieJar ? { jar: useCookieJar } : {}) },
     (err, res, body) => {
       if (err) return reject(err)
       resolve(fullResponse ? res : body)
