@@ -22,18 +22,18 @@ export const printMandarakeInfo = (info, printRawData) => {
 
   const metaData = {
     'Price': info.price,
-    'Bids': info.bids,
+    ...(info.bids ? { 'Bids': info.bids } : {}),
     'Images': info.imageCount,
-    'Time left': info.timeLeft
+    ...(info.timeLeft ? { 'Time left': info.timeLeft } : {})
   }
   
-  const categories = info.categories.map(c => c[0])
+  const categories = info.categories ? info.categories.map(c => c[0]) : []
 
   const mainData = {
     'Title': shortenString(info.title, 300),
     'Description': shortenString(info.desc, 300),
     // Omit tags if the list is empty.
-    ...(info.categories.length > 0 ? { 'Category': categories } : {})
+    ...(categories.length > 0 ? { 'Category': categories } : {})
   }
 
   console.log(topTable(metaData).toString())

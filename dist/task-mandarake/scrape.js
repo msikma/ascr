@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fetchEkizoSingle = undefined;
+exports.fetchShopSingle = exports.fetchEkizoSingle = undefined;
 
 var _cheerio = require('cheerio');
 
@@ -26,7 +26,37 @@ var cleanText = function cleanText(str) {
 };
 
 /**
- * Parses an ekizo (auction) page and returns the images.
+ * Parsers a regular shop item page and returns its data and images.
+ */
+var parseShopPage = function parseShopPage($, url) {
+  try {
+    var id = url.match(/itemCode=([0-9]+)&/)[1];
+    var images = $('.detail_item .xzoom-thumbs li img').get().map(function (img) {
+      return $(img).attr('src');
+    });
+    var itemName = cleanText($('.content_head .subject').text());
+    var desc = cleanText($('.detail_panel .caption').text());
+    var itemNumber = cleanText($('.detail_panel .__itemno').text());
+    var price = cleanText($('.detail_panel .__price').text()) + '\u5186';
+    return {
+      titlePlain: itemName,
+      title: id + ' ' + itemName,
+      desc: '' + desc,
+      price: price,
+      itemNumber: itemNumber,
+      url: url,
+      images: images,
+      imageCount: images.length
+    };
+  } catch (error) {
+    return {
+      error: error
+    };
+  }
+};
+
+/**
+ * Parses an ekizo (auction) page and returns its data and images.
  */
 var parseEkizoPage = function parseEkizoPage($, url) {
   try {
@@ -112,5 +142,37 @@ var fetchEkizoSingle = exports.fetchEkizoSingle = function () {
 
   return function fetchEkizoSingle(_x) {
     return _ref.apply(this, arguments);
+  };
+}();
+
+/**
+ * Extracts the images from a single ekizo (auction) page.
+ */
+var fetchShopSingle = exports.fetchShopSingle = function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(url) {
+    var html, $shopHTML, itemInfo;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return (0, _request.requestURL)(url);
+
+          case 2:
+            html = _context2.sent;
+            $shopHTML = _cheerio2.default.load(html);
+            itemInfo = parseShopPage($shopHTML, url);
+            return _context2.abrupt('return', itemInfo);
+
+          case 6:
+          case 'end':
+            return _context2.stop();
+        }
+      }
+    }, _callee2, undefined);
+  }));
+
+  return function fetchShopSingle(_x2) {
+    return _ref2.apply(this, arguments);
   };
 }();

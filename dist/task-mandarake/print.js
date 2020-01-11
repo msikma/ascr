@@ -28,21 +28,20 @@ var printMandarakeInfo = exports.printMandarakeInfo = function printMandarakeInf
     process.exit(1);
   }
 
-  var metaData = {
-    'Price': info.price,
-    'Bids': info.bids,
-    'Images': info.imageCount,
-    'Time left': info.timeLeft
-  };
+  var metaData = _extends({
+    'Price': info.price
+  }, info.bids ? { 'Bids': info.bids } : {}, {
+    'Images': info.imageCount
+  }, info.timeLeft ? { 'Time left': info.timeLeft } : {});
 
-  var categories = info.categories.map(function (c) {
+  var categories = info.categories ? info.categories.map(function (c) {
     return c[0];
-  });
+  }) : [];
 
   var mainData = _extends({
     'Title': (0, _format.shortenString)(info.title, 300),
     'Description': (0, _format.shortenString)(info.desc, 300)
-  }, info.categories.length > 0 ? { 'Category': categories } : {});
+  }, categories.length > 0 ? { 'Category': categories } : {});
 
   console.log((0, _tables.topTable)(metaData).toString());
   console.log((0, _tables.mainTable)(mainData).toString());

@@ -10,12 +10,41 @@ import { requestURL } from '../util/request'
 const cleanText = (str) => {
   return str
     .replace(/\t|\n/g, ' ')
-    .replace(/ +(?= )/g,'')
+    .replace(/ +(?= )/g, '')
     .trim()
 }
 
 /**
- * Parses an ekizo (auction) page and returns the images.
+ * Parsers a regular shop item page and returns its data and images.
+ */
+const parseShopPage = ($, url) => {
+  try {
+    const id = url.match(/itemCode=([0-9]+)&/)[1]
+    const images = $('.detail_item .xzoom-thumbs li img').get().map(img => $(img).attr('src'))
+    const itemName = cleanText($('.content_head .subject').text())
+    const desc = cleanText($('.detail_panel .caption').text())
+    const itemNumber = cleanText($('.detail_panel .__itemno').text())
+    const price = `${cleanText($('.detail_panel .__price').text())}円`
+    return {
+      titlePlain: itemName,
+      title: `${id} ${itemName}`,
+      desc: `${desc}`,
+      price,
+      itemNumber,
+      url,
+      images,
+      imageCount: images.length
+    }
+  }
+  catch (error) {
+    return {
+      error
+    }
+  }
+}
+
+/**
+ * Parses an ekizo (auction) page and returns its data and images.
  */
 const parseEkizoPage = ($, url) => {
   try {
@@ -79,4 +108,14 @@ export const fetchEkizoSingle = async (url) => {
   const $ekizoHTML = cheerio.load(html)
   const ekizoInfo = parseEkizoPage($ekizoHTML, url)
   return ekizoInfo
+}
+
+/**
+ * Extracts the images from a single ekizo (auction) page.
+ */
+export const fetchShopSingle = async (url) => {
+  const html = await requestURL(url)
+  const $shopHTML = cheerio.load(html)
+  const itemInfo = parseShopPage($shopHTML, url)
+  return itemInfo
 }

@@ -25,13 +25,19 @@ var isMandarakeAuctionURL = function isMandarakeAuctionURL(url) {
 };
 
 /**
+ * Checks whether a URL is for an auction page.
+ */
+var isMandarakeShopURL = function isMandarakeShopURL(url) {
+  return (/\/\/order\.mandarake\.co\.jp\/order\/detailPage\/item.+?itemCode=[0-9]+/.test(url)
+  );
+};
+
+/**
  * Checks whether a URL is any kind of Mandarake link we can scrape.
  * Currently only auction links are supported.
  */
 var isMandarakeURL = exports.isMandarakeURL = function isMandarakeURL(url) {
-  if (isMandarakeAuctionURL(url)) {
-    return true;
-  }
+  return isMandarakeAuctionURL(url) || isMandarakeShopURL(url);
 };
 
 /**
@@ -51,6 +57,14 @@ var fetchMandarakeURL = exports.fetchMandarakeURL = function () {
             return _context.abrupt('return', (0, _scrape.fetchEkizoSingle)(url));
 
           case 2:
+            if (!isMandarakeShopURL(url)) {
+              _context.next = 4;
+              break;
+            }
+
+            return _context.abrupt('return', (0, _scrape.fetchShopSingle)(url));
+
+          case 4:
           case 'end':
             return _context.stop();
         }

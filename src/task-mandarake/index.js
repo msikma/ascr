@@ -3,7 +3,7 @@
  * Copyright © 2019, Michiel Sikma
  */
 
-import { fetchEkizoSingle } from './scrape'
+import { fetchEkizoSingle, fetchShopSingle } from './scrape'
 import { printMandarakeInfo } from './print'
 import { downloadMandarakeImages } from './download'
 
@@ -15,13 +15,18 @@ const isMandarakeAuctionURL = (url) => (
 )
 
 /**
+ * Checks whether a URL is for an auction page.
+ */
+const isMandarakeShopURL = (url) => (
+  /\/\/order\.mandarake\.co\.jp\/order\/detailPage\/item.+?itemCode=[0-9]+/.test(url)
+)
+
+/**
  * Checks whether a URL is any kind of Mandarake link we can scrape.
  * Currently only auction links are supported.
  */
 export const isMandarakeURL = (url) => {
-  if (isMandarakeAuctionURL(url)) {
-    return true
-  }
+  return isMandarakeAuctionURL(url) || isMandarakeShopURL(url)
 }
 
 /**
@@ -30,6 +35,9 @@ export const isMandarakeURL = (url) => {
 export const fetchMandarakeURL = async (url) => {
   if (isMandarakeAuctionURL(url)) {
     return fetchEkizoSingle(url)
+  }
+  if (isMandarakeShopURL(url)) {
+    return fetchShopSingle(url)
   }
 }
 
