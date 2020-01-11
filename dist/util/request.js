@@ -15,6 +15,12 @@ var _request = require('request');
 
 var _request2 = _interopRequireDefault(_request);
 
+var _nodeFetch = require('node-fetch');
+
+var _nodeFetch2 = _interopRequireDefault(_nodeFetch);
+
+var _name = require('./name');
+
 var _cookies = require('./cookies');
 
 var _cookies2 = _interopRequireDefault(_cookies);
@@ -114,13 +120,57 @@ var browserHeaders = exports.browserHeaders = {
  */
 var pipeFile = function pipeFile(args, name) {
   return new Promise(function (resolve, reject) {
-    (0, _request2.default)(args).on('response', function (response) {
-      if (response.statusCode === 404) {
-        return reject();
-      }
-    }).on('error', function (err) {
-      reject(err);
-    }).pipe(_fs2.default.createWriteStream(name));
+    _request2.default.get(_extends({}, args, { resolveWithFullResponse: true, encoding: null }), function () {}).on('complete', function () {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(res, body) {
+        var headers, type, finalName, _getExtAndBase, fn;
+
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                headers = new _nodeFetch2.default.Headers(res.headers);
+                type = headers.get('Content-Type').toLowerCase();
+
+                if (!(res.statusCode === 404)) {
+                  _context2.next = 4;
+                  break;
+                }
+
+                return _context2.abrupt('return', reject());
+
+              case 4:
+                // Hack: sometimes jpg files are actually webp files.
+                finalName = name;
+
+                if (type === 'image/webp') {
+                  _getExtAndBase = (0, _name.getExtAndBase)(name), fn = _getExtAndBase.fn;
+
+                  finalName = fn + '.webp';
+                }
+                _context2.prev = 6;
+                _context2.next = 9;
+                return saveBinaryFile(body, finalName);
+
+              case 9:
+                return _context2.abrupt('return', resolve());
+
+              case 12:
+                _context2.prev = 12;
+                _context2.t0 = _context2['catch'](6);
+                return _context2.abrupt('return', reject());
+
+              case 15:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, undefined, [[6, 12]]);
+      }));
+
+      return function (_x9, _x10) {
+        return _ref2.apply(this, arguments);
+      };
+    }());
   });
 };
 
@@ -129,7 +179,7 @@ var pipeFile = function pipeFile(args, name) {
  */
 var saveBinaryFile = function saveBinaryFile(data, dest) {
   return new Promise(function (resolve, reject) {
-    _fs2.default.writeFile(dest, data, { encoding: 'binary' }, function (err) {
+    _fs2.default.writeFile(dest, data, { encoding: null }, function (err) {
       if (err) return reject();
       return resolve();
     });
@@ -146,7 +196,7 @@ var requestURL = exports.requestURL = function requestURL(url) {
   var etc = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
   var useCookieJar = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : _cookies2.default.jar;
   return new Promise(function (resolve, reject) {
-    return (0, _request2.default)(_extends({ url: url, headers: _extends({}, browserHeaders, headers != null ? headers : {}) }, requestDefaults, etc, useCookieJar ? { jar: useCookieJar } : {}), function (err, res, body) {
+    return (0, _request2.default)(_extends({ url: encodeURI(url), headers: _extends({}, browserHeaders, headers != null ? headers : {}) }, requestDefaults, etc, useCookieJar ? { jar: useCookieJar } : {}), function (err, res, body) {
       if (err) return reject(err);
       resolve(fullResponse ? res : body);
     });

@@ -5,7 +5,9 @@
 
 import fs from 'fs'
 import request from 'request'
+import fetch from 'node-fetch'
 
+import { getExtAndBase } from './name'
 import cookieJar from './cookies'
 
 // Headers similar to what a regular browser would send.
@@ -58,16 +60,27 @@ export const downloadFileAsBrowser = (url, name, useCookieJar = cookieJar.jar, e
  */
 const pipeFile = (args, name) => (
   new Promise((resolve, reject) => {
-    request(args)
-      .on('response', (response) => {
-        if (response.statusCode === 404) {
+    request.get({ ...args, resolveWithFullResponse: true, encoding: null }, () => {})
+      .on('complete', async (res, body) => {
+        const headers = new fetch.Headers(res.headers)
+        const type = headers.get('Content-Type').toLowerCase()
+        if (res.statusCode === 404) {
+          return reject()
+        }
+        // Hack: sometimes jpg files are actually webp files.
+        let finalName = name
+        if (type === 'image/webp') {
+          const { fn } = getExtAndBase(name)
+          finalName = `${fn}.webp`
+        }
+        try {
+          await saveBinaryFile(body, finalName)
+          return resolve()
+        }
+        catch (err) {
           return reject()
         }
       })
-      .on('error', (err) => {
-        reject(err)
-      })
-      .pipe(fs.createWriteStream(name))
   })
 )
 
@@ -76,7 +89,7 @@ const pipeFile = (args, name) => (
  */
 const saveBinaryFile = (data, dest) => (
   new Promise((resolve, reject) => {
-    fs.writeFile(dest, data, { encoding: 'binary' }, (err) => {
+    fs.writeFile(dest, data, { encoding: null }, (err) => {
       if (err) return reject()
       return resolve()
     })

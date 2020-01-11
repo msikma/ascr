@@ -6,7 +6,8 @@
   "main": "dist/index.js",
   "scripts": {
     "lint": "eslint src; exit 0",
-    "build": "babel src --presets babel-preset-env --plugins transform-class-properties,transform-object-rest-spread --out-dir dist"
+    "build": "babel src --presets babel-preset-env --plugins transform-class-properties,transform-object-rest-spread --out-dir dist",
+    "watch": "babel src --watch --presets babel-preset-env --plugins transform-class-properties,transform-object-rest-spread --out-dir dist"
   },
   "bin": "bin/ascr",
   "author": "Michiel Sikma <michiel@sikma.org>",
@@ -38,6 +39,7 @@
     "moment": "^2.21.0",
     "move-file": "^1.0.0",
     "natives": "^1.1.6",
+    "node-fetch": "^2.6.0",
     "request": "^2.87.0",
     "sanitize-filename": "^1.6.1",
     "strip-ansi": "^4.0.0",
