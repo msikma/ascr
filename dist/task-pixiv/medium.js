@@ -100,21 +100,8 @@ var getPreloadData = function getPreloadData($, illustID) {
   var userData = {};
   var preloadData = void 0;
 
-  // Attempt to use a <script> with 'globalInitData'.
-  var bootstrapJS = $('script').get().map(function (s) {
-    return $(s).html();
-  }).filter(function (s) {
-    return s.indexOf('globalInitData') > -1;
-  });
-  var bootstrapData = (0, _script.findScriptData)(bootstrapJS).sandbox.globalInitData;
-  if (bootstrapData) {
-    preloadData = bootstrapData.preload;
-  } else {
-    // Failing that, look for the <meta> tag.
-    var dataMetaTag$ = $('meta#meta-preload-data');
-    var dataMeta = dataMetaTag$.attr('content');
-    preloadData = JSON.parse(dataMeta);
-  }
+  var bootstrapJS = $('meta#meta-preload-data');
+  preloadData = JSON.parse(bootstrapJS.attr('content'));
   illustData = preloadData.illust[illustID];
   userData = preloadData.user[illustData.userId];
 
