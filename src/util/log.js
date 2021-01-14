@@ -4,9 +4,14 @@
  */
 
 import draftLog from 'draftlog'
+import util from 'util'
 
 // Monkey patch the console object with draftlog.
 draftLog.into(console)
+
+export const logDeep = (obj) => {
+  console.log(util.inspect(obj, { showHidden: false, depth: 9, colors: true }))
+}
 
 const disableLogging = () => {
   console.log = () => {}

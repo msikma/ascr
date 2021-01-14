@@ -77,18 +77,8 @@ const getPreloadData = ($, illustID) => {
   let userData = {}
   let preloadData
 
-  // Attempt to use a <script> with 'globalInitData'.
-  const bootstrapJS = $('script').get().map(s => $(s).html()).filter(s => s.indexOf('globalInitData') > -1)
-  const bootstrapData = findScriptData(bootstrapJS).sandbox.globalInitData
-  if (bootstrapData) {
-    preloadData = bootstrapData.preload
-  }
-  else {
-    // Failing that, look for the <meta> tag.
-    const dataMetaTag$ = $('meta#meta-preload-data')
-    const dataMeta = dataMetaTag$.attr('content')
-    preloadData = JSON.parse(dataMeta)
-  }
+  const bootstrapJS = $('meta#meta-preload-data')
+  preloadData = JSON.parse(bootstrapJS.attr('content'))
   illustData = preloadData.illust[illustID]
   userData = preloadData.user[illustData.userId]
 
