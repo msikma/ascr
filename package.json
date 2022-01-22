@@ -39,7 +39,7 @@
     "moment": "^2.21.0",
     "move-file": "^1.0.0",
     "natives": "^1.1.6",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "request": "^2.87.0",
     "sanitize-filename": "^1.6.1",
     "strip-ansi": "^4.0.0",
